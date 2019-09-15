@@ -17,7 +17,6 @@ $router->get('/', function () use ($router) {
 
 
 
-$router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->post('login', ['uses' => 'AuthController@login'], function (){});
     $router->post('reissue', ['uses' => 'AuthController@reissueToken'], function (){});
@@ -48,4 +47,3 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         
     });
     
-});
