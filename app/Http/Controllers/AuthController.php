@@ -28,7 +28,7 @@ public function login(Request $request)
 
 public function reissueToken(Request $request)
 {
-    if (!Auth::guard('api')->JWTAuth::parseToken())
+    if (!Auth::guard('api')->parseToken())
     {
         return response()->json(['Token is expired and cannot be refreshed anymore'], 401);
     }
