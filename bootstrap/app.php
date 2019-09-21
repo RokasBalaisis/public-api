@@ -24,7 +24,8 @@ $app = new Laravel\Lumen\Application(
 
 // SERVICE ALIASES
 class_alias(Pbmedia\LaravelFFMpeg\FFMpegFacade::class, 'FFMpeg');
-// class_alias(Tymon\JWTAuth\Facades\JWTFactory::class, 'JWTFactory');
+class_alias(Tymon\JWTAuth\Facades\JWTAuth::class, 'JWTAuth');
+class_alias(Tymon\JWTAuth\Facades\JWTFactory::class, 'JWTFactory');
 
 $app->withFacades();
 
@@ -67,7 +68,7 @@ $app->middleware([
 ]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class
+    'jwt.verify' => App\Http\Middleware\Authenticate::class
 ]);
 
 /*
