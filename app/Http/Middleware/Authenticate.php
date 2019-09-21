@@ -47,9 +47,9 @@ class Authenticate
             catch (JWTException $e)
             {
                 if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-                    return response("Token is Invalid.");
+                    return response("Token is Invalid.", 401);
                 }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-                    return response('Token is Expired.');
+                    return response('Token is Expired.', 401);
                 }
             }   
             return response('Unauthorized.', 401);
