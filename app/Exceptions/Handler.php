@@ -51,15 +51,15 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof TokenExpiredException) {
 
-            return Response::jwt_error($exception->getCode(), $exception->getMessage());
+            return response()->json(['token_expired'], $exception->getStatusCode());
 
         }else if($exception instanceof TokenInvalidException){
 
-            return Response::jwt_error($exception->getCode(), $exception->getMessage());
+            return response()->json(['token_invalid'], $exception->getStatusCode());
 
         }else if($exception instanceof JWTException){
 
-            return Response::jwt_error($exception->getCode(), $exception->getMessage());
+            return response()->json(['jwt_exception'], $exception->getStatusCode());
 
         }
 
