@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -27,6 +28,7 @@ public function login(Request $request)
 
 public function reissueToken(Request $request)
 {
+    return null;
    // try{
         return response()->json(['token' => Auth::guard('api')->parseToken()->refresh()]);
    // }    
