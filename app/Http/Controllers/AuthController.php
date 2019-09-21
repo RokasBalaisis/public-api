@@ -63,6 +63,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        return response()->json("User successfully logged in", 200)->header("Authorization", "Bearer " . $token);
+        return response()->json("User successfully logged in", 200)->header('Authorization', 'Bearer ' . $token);
     }
 }
