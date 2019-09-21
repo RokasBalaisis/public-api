@@ -32,15 +32,15 @@ class Authenticate
   // If the user was logged in, we can process the request
   $response = $next($request);
   
-  // AFTER THE REQUEST HAS BEEN THROUGH OUR PROJECT
-  // If the user is logged in, and the method refresh exists with
-  // this auth package (i.e. we're using JWT), then we want to
-  // refresh the token for the user's next request.
-  if (Auth::guard($guard)->check() && method_exists(Auth::guard($guard), 'refresh'))
-  {
-    // Refresh the token, and place it in the headers for the user to pick up at the front end.
-    $response->headers->set('Authorization', 'Bearer ' . Auth::guard($guard)->refresh());
-  }
+  // // AFTER THE REQUEST HAS BEEN THROUGH OUR PROJECT
+  // // If the user is logged in, and the method refresh exists with
+  // // this auth package (i.e. we're using JWT), then we want to
+  // // refresh the token for the user's next request.
+  // if (Auth::guard($guard)->check() && method_exists(Auth::guard($guard), 'refresh'))
+  // {
+  //   // Refresh the token, and place it in the headers for the user to pick up at the front end.
+  //   $response->headers->set('Authorization', 'Bearer ' . Auth::guard($guard)->refresh());
+  // }
   return $response;
  }
 }
