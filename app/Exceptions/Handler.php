@@ -8,6 +8,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class Handler extends ExceptionHandler
 {
@@ -45,6 +48,21 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+
+        if ($exception instanceof TokenExpiredException) {
+
+            return Response::jwt_error($exception->getCode(), $exception->getMessage());
+
+        }else if($exception instanceof TokenInvalidException){
+
+            return Response::jwt_error($exception->getCode(), $exception->getMessage());
+
+        }else if($exception instanceof JWTException){
+
+            return Response::jwt_error($exception->getCode(), $exception->getMessage());
+
+        }
+
         return parent::render($request, $exception);
     }
 }
