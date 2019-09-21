@@ -3,12 +3,13 @@
 namespace App;
 
     use Illuminate\Notifications\Notifiable;
-    use Illuminate\Foundation\Auth\User as Authenticatable;
+    use Illuminate\Auth\Authenticatable;
+    use Illuminate\Database\Eloquent\Model;
     use Tymon\JWTAuth\Contracts\JWTSubject;
 
-    class User extends Authenticatable implements JWTSubject
+    class User extends Model implements JWTSubject
     {
-        use Notifiable;
+        use Notifiable, Authenticatable;
 
         /**
          * The attributes that are mass assignable.
