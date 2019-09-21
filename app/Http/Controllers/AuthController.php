@@ -27,12 +27,21 @@ public function login(Request $request)
 
 public function reissueToken(Request $request)
 {
-    //try{
+    $token = Auth::guard('api')->parseToken();
+    if($token)
+    {
         return response()->json(['token' => Auth::guard('api')->parseToken()->refresh()]);
+    }
+    else
+    {
+        return response()->json(['Token is expired and cannot be refreshed anymore'], 401);
+    }
+    //try{
+        
     //}    
     //catch (JWTException $e)
    // {
-    //     return response()->json(['Token is expired and cannot be refreshed anymore'], 401);
+    //     
     //}
 }
 }
