@@ -12,9 +12,9 @@ return [
     | as required, but they're a perfect start for most applications.
     |
     */
-    'defaults' => [
-        'guard' => 'api',
-        'passwords' => 'users',
+    "defaults" => [
+        "guard"     => env("AUTH_GUARD", "api"),
+        "passwords" => "users",
     ],
 
 
@@ -34,11 +34,11 @@ return [
     | Supported: "session", "token"
     |
     */
-    'guards' => [
-        'api' => [
-            'driver' => 'jwt',
-            'provider' => 'users',
-        ]
+    "guards" => [
+        "api" => [
+            "driver"   => "jwt",
+            "provider" => "users"
+        ],
     ],
 
     // optional, if use eloquent

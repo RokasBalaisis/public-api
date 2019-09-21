@@ -9,20 +9,25 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 class AuthController extends Controller
 {
    // Validate the form via the LoginRequest Form Request Class
-public function login(Request $request)
-{
-    // Attempt to log in the user with credentials
-    if(Auth::guard('api')->attempt(['email' => $request->get('email'), 'password' => $request->get('password')]))
-    {
-        // If successful grab the user
-        $customer = Auth::guard('api')->user();
-            // Lets generate the token
-            $token = Auth::guard('api')->tokenById($customer->id);
-            // Return the user and the token
-            return response()->json(['user_data' => Auth::guard('api')->user(), 'token' => 'Bearer ' . $token]);
+   public function login(Request $request) {
+
+    // Validate
+    $this->userValidator->validateLogin($request);
+
+    // Attempt login
+    $credentials = $request->only("email", "password");
+
+    if (!$token = Auth::attempt($credentials)) {
+        throw ValidationException::withMessages(["login" => "Incorrect email or password."]);
     }
-    // If the credentials were incorrect, tell the user
-    return response()->json(['error' => 'invalid_credentials'], 401);
+
+    return [
+        "token" => [
+            "access_token" => $token,
+            "token_type"   => "Bearer",
+            "expire"       => (int) Auth::guard()->factory()->getTTL()
+        ]
+    ];
 }
 
 public function reissueToken(Request $request)

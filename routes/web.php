@@ -23,7 +23,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'users'], function () use ($router) {
 
-        $router->group(['middleware' => 'jwt.verify'], function () use ($router) {
+        $router->group(['middleware' => 'auth:api'], function () use ($router) {
             $router->get('/', ['uses' => 'UserController@index'], function (){});
             $router->get('/{id}', ['uses' => 'UserController@show'], function (){});
             $router->post('/', ['uses' => 'UserController@store'], function (){});
@@ -36,7 +36,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'roles'], function () use ($router) {
 
-        $router->group(['middleware' => 'jwt.verify'], function () use ($router) {
+        $router->group(['middleware' => 'auth:api'], function () use ($router) {
             $router->get('/', ['uses' => 'RoleController@index'], function (){});
             // $router->get('/{id}', ['uses' => 'UserController@show'], function (){});
             // $router->post('/', ['uses' => 'UserController@store'], function (){});
