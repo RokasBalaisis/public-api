@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -28,16 +27,12 @@ public function login(Request $request)
 
 public function reissueToken(Request $request)
 {
-    if (!Auth::guard('api')->parseToken())
-    {
-        return response()->json(['Token is expired and cannot be refreshed anymore'], 401);
-    }
-   else{
+    //try{
         return response()->json(['token' => Auth::guard('api')->parseToken()->refresh()]);
-    }    
-   // catch (JWTException $e)
+    //}    
+    //catch (JWTException $e)
    // {
-   //      return response()->json(['Token is expired and cannot be refreshed anymore'], 401);
+    //     return response()->json(['Token is expired and cannot be refreshed anymore'], 401);
     //}
 }
 }
