@@ -4,9 +4,11 @@ namespace App\Http\Middleware;
 
 namespace App\Http\Middleware;
 use Closure;
+use App\User;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Authenticate
 {
@@ -36,12 +38,15 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        
         if(!$this->auth->guard($guard)->check())
         {
             try
             {
                 $refreshed_token = $this->auth->guard($guard)->refresh();
+                $payload = \JWTAuth::manager()->getJWTProvider()->decode($refreshed_token);
+                $currentuser = User::find($payload['sub']);
+                $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
+                $this->auth->guard($guard)->attempt($credentials);
                 return $next($request)->header("Authorization", "Bearer " . $refreshed_token);
             }
             catch (JWTException $e)
@@ -54,7 +59,6 @@ class Authenticate
             }   
             return response('Unauthorized.', 401);
         }
-
 
         return $next($request);
     }
