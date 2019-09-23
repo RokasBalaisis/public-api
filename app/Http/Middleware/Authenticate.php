@@ -45,7 +45,7 @@ class Authenticate
             try
             {
                 $payload = $this->auth->guard($guard)->manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
-                if($payload['exp'] < Carbon::now())
+                if($payload['exp'] < Carbon::now()->timestamp)
                 {
                     return response('Token is Expired.', 401);
                 }
