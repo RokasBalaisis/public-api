@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         try {
             $user = new User;
-            $user->name = $request->input('name');
+            $user->name = $request->input('username');
             $user->email = $request->input('registration_email');
             $plainPassword = $request->input('registration_password');
             $user->password = app('hash')->make($plainPassword);
