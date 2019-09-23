@@ -43,14 +43,14 @@ class Authenticate
         
             try
             {
-                $payload = $this->auth->guard($guard)->manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
+                $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
                 if($payload['exp'] < Carbon::now()->timestamp)
                 {
                     return response('Token is Expired.', 401);
                 }
                 $currentuser = User::find($payload['sub']);
                 $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
-                $this->auth->guard($guard)->logout(true);
+                \JWTAuth::logout(true);
                 if (! $new_token = Auth::attempt($credentials)) {
                     return response()->json('attempt error', 401);
                 }
