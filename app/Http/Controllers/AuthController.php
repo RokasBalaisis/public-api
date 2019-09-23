@@ -21,7 +21,7 @@ class AuthController extends Controller
         $this->validate($request, [
             'name' => 'required|string',
             'registration_email' => 'required|email',
-            'registration_password' => 'required|confirmed',
+            'registration_password' => 'required',
         ]);
 
         if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
@@ -30,7 +30,7 @@ class AuthController extends Controller
         }
 
         try {
-
+            dd("lol");
             $user = new User;
             $user->name = $request->input('name');
             $user->email = $request->input('registration_email');
