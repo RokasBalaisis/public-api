@@ -50,6 +50,7 @@ class Authenticate
                 }
                 $currentuser = User::find($payload['sub']);
                 $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
+                dd($credentials);
                 Auth::logout();
                 if (! $new_token = Auth::attempt($credentials)) {
                     return response()->json('attempt error', 401);
