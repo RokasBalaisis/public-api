@@ -38,18 +38,20 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        $payload = $this->auth->guard($guard)->manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
-        dd($payload);
+        
         if(!$this->auth->guard($guard)->check())
         {
             try
             {
-                $refreshed_token = $this->auth->guard($guard)->refresh();
-                $payload = \JWTAuth::manager()->getJWTProvider()->decode($refreshed_token);
+                $token = $this->auth->guard($guard)->manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
+                $payload = \JWTAuth::manager()->getJWTProvider()->decode($token);
                 $currentuser = User::find($payload['sub']);
                 $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
-                $this->auth->guard($guard)->attempt($credentials);
-                return $next($request)->header("Authorization", "Bearer " . $refreshed_token);
+                $this->auth->guard($guard)->invalidate(true);
+                if (! $new_token = $this->auth->guard($guard)->attempt($credentials)) {
+                    return response()->json('attempt error', 401);
+                }
+                return $next($request)->header("Authorization", "Bearer " . $new_token);
             }
             catch (JWTException $e)
             {
