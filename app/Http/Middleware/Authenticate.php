@@ -40,8 +40,6 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         
-        if(!$this->auth->guard($guard)->check())
-        {
             try
             {
                 $payload = $this->auth->guard($guard)->manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
@@ -66,7 +64,6 @@ class Authenticate
                 }
             }   
             return response('Unauthorized.', 401);
-        }
 
         return $next($request);
     }
