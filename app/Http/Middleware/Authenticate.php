@@ -49,7 +49,7 @@ class Authenticate
                 }
                 $currentuser = User::find($payload['sub']);
                 $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
-                $this->auth->guard($guard)->invalidate(true);
+                $this->auth->guard($guard)->logout(true);
                 if (! $new_token = $this->auth->guard($guard)->attempt($credentials)) {
                     return response()->json('attempt error', 401);
                 }
