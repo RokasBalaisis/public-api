@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -19,9 +20,14 @@ class AuthController extends Controller
         //validate incoming request 
         $this->validate($request, [
             'name' => 'required|string',
-            'registration_email' => 'required|email|unique:users',
+            'registration_email' => 'required|email',
             'registration_password' => 'required|confirmed',
         ]);
+
+        if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
+        {
+            return response()->json(['message' => 'User with this email already exists!'], 409);
+        }
 
         try {
 
