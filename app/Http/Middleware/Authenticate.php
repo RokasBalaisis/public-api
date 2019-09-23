@@ -38,6 +38,7 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
+        $payload = $this->auth->guard($guard)->manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
         if(!$this->auth->guard($guard)->check())
         {
             try
