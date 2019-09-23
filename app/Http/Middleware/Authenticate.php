@@ -49,10 +49,8 @@ class Authenticate
                     return response('Token is Expired.', 401);
                 }
                 $currentuser = User::find($payload['sub']);
-                $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
-                dd($credentials);
                 Auth::logout();
-                if (! $new_token = Auth::attempt($credentials)) {
+                if (! $new_token = Auth::fromUser($currentuser)) {
                     return response()->json('attempt error', 401);
                 }
                 return $next($request)->header("Authorization", "Bearer " . $new_token);
