@@ -5,8 +5,7 @@ namespace App\Http\Middleware;
 namespace App\Http\Middleware;
 use Closure;
 use App\User;
-// use Illuminate\Contracts\Auth\Factory as Auth;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Auth\Factory as Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -41,20 +40,20 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         
-            try
+        try
+        {
+            $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
+            if($payload['exp'] < Carbon::now()->timestamp)
             {
-                $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
-                if($payload['exp'] < Carbon::now()->timestamp)
-                {
-                    return response('Token is Expired.', 401);
-                }
-                $currentuser = User::find($payload['sub']);
-                Auth::logout();
-                if (! $new_token = Auth::fromUser($currentuser)) {
-                    return response()->json('attempt error', 401);
-                }
-                return $next($request)->header("Authorization", "Bearer " . $new_token);
+                return response('Token is Expired.', 401);
             }
+            $currentuser = User::find($payload['sub']);
+            $this->auth->guard($guard)->logout();
+            if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
+                return response()->json('attempt error', 401);
+            }
+            return $next($request)->header("Authorization", "Bearer " . $new_token);
+        }
             catch (JWTException $e)
             {
                 if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
