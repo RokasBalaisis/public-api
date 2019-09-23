@@ -19,7 +19,7 @@ class AuthController extends Controller
     {
         //validate incoming request 
         $this->validate($request, [
-            'name' => 'required|string',
+            'username' => 'required|string',
             'registration_email' => 'required|email',
             'registration_password' => 'required',
         ]);
