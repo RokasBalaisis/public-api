@@ -50,7 +50,7 @@ class Authenticate
                 $currentuser = User::find($payload['sub']);
                 $credentials = ["email" => $currentuser->email, "password" => $currentuser->password];
                 $this->auth->guard($guard)->logout(true);
-                if (! $new_token = $this->auth->guard($guard)->attempt($credentials)) {
+                if (! $new_token = Auth::attempt($credentials)) {
                     return response()->json('attempt error', 401);
                 }
                 return $next($request)->header("Authorization", "Bearer " . $new_token);
