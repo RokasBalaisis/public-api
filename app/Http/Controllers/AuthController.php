@@ -30,7 +30,6 @@ class AuthController extends Controller
         }
 
         try {
-            dd("lol");
             $user = new User;
             $user->name = $request->input('name');
             $user->email = $request->input('registration_email');
@@ -40,7 +39,7 @@ class AuthController extends Controller
             $user->save();
 
             //return successful response
-            return response()->json(['user' => $user, 'message' => 'CREATED'], 201);
+            return response()->json(['user' => $user, 'message' => 'User created successfuly'], 201);
 
         } catch (\Exception $e) {
             //return error message
