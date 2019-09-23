@@ -19,16 +19,16 @@ class AuthController extends Controller
         //validate incoming request 
         $this->validate($request, [
             'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
+            'emailRegister' => 'required|email|unique:users',
+            'passwordRegister' => 'required|confirmed',
         ]);
 
         try {
 
             $user = new User;
             $user->name = $request->input('name');
-            $user->email = $request->input('email');
-            $plainPassword = $request->input('password');
+            $user->email = $request->input('emailRegister');
+            $plainPassword = $request->input('passwordRegister');
             $user->password = app('hash')->make($plainPassword);
 
             $user->save();
@@ -65,4 +65,6 @@ class AuthController extends Controller
 
         return response()->json("User successfully logged in", 200)->header('Authorization', 'Bearer ' . $token);
     }
+
+    
 }
