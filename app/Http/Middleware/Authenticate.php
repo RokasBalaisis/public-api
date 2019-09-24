@@ -44,11 +44,13 @@ class Authenticate
         try
         {
             $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
+            $currentuser = User::find($payload['sub']);
+            dd($this->auth->guard($guard)->user());
             if($payload['exp'] < Carbon::now()->timestamp)
             {
                 return response('Token is Expired.', 401);
             }
-            $currentuser = User::find($payload['sub']);
+            
             if($currentuser == null)
                 return response()->json('Unauthorized', 401);
             $this->auth->guard($guard)->logout();
