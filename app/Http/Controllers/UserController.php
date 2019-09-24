@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\User;
+use App\Role;
+use App\UserRole;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -19,7 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('role')->get();
+        $users = User::with('userRole')->get();
         return response()->json(['users' => $users], 200);
     }
 
