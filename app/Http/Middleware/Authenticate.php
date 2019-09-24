@@ -63,9 +63,7 @@ class Authenticate
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
                 return response()->json('Unauthorized', 401);
             }
-            var_dump($new_token);
             $new_payload = \JWTAuth::manager()->getJWTProvider()->decode($new_token);
-            var_dump($new_payload);
             DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti']]);
             return $next($request)->header("Authorization", "Bearer " . $new_token);
         }
