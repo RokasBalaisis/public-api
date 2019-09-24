@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->string('email', 100)->unique();
             $table->string('password', 100);
             $table->tinyInteger('status')->default(0);
+            $table->string('jti', 50)->default(null);
             $table->timestamps();
         });
     }
