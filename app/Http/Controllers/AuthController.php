@@ -65,11 +65,11 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only(['email', 'password']);
-        if(DB::table('users')->where('email', $request->email)->count() > 0)
-        {
-            $userId = User::where('email', $request->email)->first()->pluck('id');
-            dd(Auth::tokenById($userId));
-        }
+        // if(DB::table('users')->where('email', $request->email)->count() > 0)
+        // {
+        //     $userId = Users::where('email', $request->email)->first()->pluck();
+        //     dd(Auth::tokenById($userId));
+        // }
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
