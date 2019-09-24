@@ -51,6 +51,10 @@ class Authenticate
             if($currentuser == null)
                 return response()->json('Unauthorized', 401);
             $this->auth->guard($guard)->logout();
+            if(DB::table('users')->where('id', $currentuser->id)->first()->status == 0)
+            {
+                return response()->json('Unauthorized', 401);
+            }
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
                 return response()->json('Unauthorized', 401);
             }
