@@ -48,9 +48,11 @@ class Authenticate
                 return response('Token is Expired.', 401);
             }
             $currentuser = User::find($payload['sub']);
+            if($currentuser == null)
+                return response()->json('Unauthorized', 401);
             $this->auth->guard($guard)->logout();
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
-                return response()->json('attempt error', 401);
+                return response()->json('Unauthorized', 401);
             }
             return $next($request)->header("Authorization", "Bearer " . $new_token);
         }
