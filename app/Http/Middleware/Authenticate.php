@@ -41,8 +41,6 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         
-        try
-        {
             $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
             $currentuser = User::find($payload['sub']);
             if($payload['exp'] < Carbon::now()->timestamp)
@@ -66,16 +64,8 @@ class Authenticate
             $new_payload = \JWTAuth::manager()->getJWTProvider()->decode($new_token);
             DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti']]);
             return $next($request)->header("Authorization", "Bearer " . $new_token);
-        }
-            catch (JWTException $e)
-            {
-                if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-                    return response("Token is Invalid.", 401);
-                }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-                    return response('Token is Expired.', 401);
-                }
-            }   
-            return response('Unauthorized.', 401);
+         
+
 
     }
     
