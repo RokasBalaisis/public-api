@@ -68,7 +68,7 @@ class AuthController extends Controller
         if(DB::table('users')->where('email', $request->email)->count() > 0)
         {
             $result = DB::table('users')->where('email', $request->email)->first();
-            dd($result['id']);
+            dd($result->id);
             if(DB::table('users')->where('id', $userId)->first()->status == 1)
             {
                 return response()->json(['error' => 'User is already logged in'], 401);
