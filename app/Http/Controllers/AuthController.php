@@ -73,7 +73,7 @@ class AuthController extends Controller
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
-        DB::table('users')->where('email', $request->email)->first()->update(['status' => 1]);
+        DB::table('users')->where('email', $request->email)->first()->updateOrInsert(['status' => 1]);
         return response()->json("User successfully logged in", 200)->header('Authorization', 'Bearer ' . $token);
     }
 
