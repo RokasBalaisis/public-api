@@ -70,7 +70,7 @@ class AuthController extends Controller
             $userId = User::where('email', $request->email)->first()->pluck('id');
             if(DB::table('users')->where('id', $userId)->first()->status == 1)
             {
-                return response()->json(['message' => 'User is already logged in'], 401);
+                return response()->json(['error' => 'User is already logged in'], 401);
             }
         }
         if (! $token = Auth::attempt($credentials)) {
