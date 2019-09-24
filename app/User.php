@@ -15,6 +15,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable;
 
+    protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -34,7 +36,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
 
-    public function userRole()
+    public function role()
     {
         return $this->hasOne('App\Role')->using('App\UserRole');
     }
