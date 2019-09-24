@@ -57,7 +57,7 @@ class Authenticate
             
             if($currentuser == null)
                 return response()->json('Unauthorized', 401);
-            JWTAuth::manager()->getJWTProvider()->invalidate(true);
+            dd(JWTAuth::manager()->getJWTProvider());
             if(DB::table('users')->where('id', $currentuser->id)->first()->status == 0)
             {
                 return response()->json('Unauthorized', 401);
