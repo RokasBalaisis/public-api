@@ -67,7 +67,7 @@ class AuthController extends Controller
         $credentials = $request->only(['email', 'password']);
         if(DB::table('users')->where('email', $request->email)->count() > 0)
         {
-            $userId = DB::table('users')->where('email', $request->email)->first()->get('id');
+            $userId = DB::table('users')->where('email', $request->email)->first();
             dd(Auth::tokenById($userId));
         }
         if (! $token = Auth::attempt($credentials)) {
