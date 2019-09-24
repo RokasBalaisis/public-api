@@ -7,6 +7,8 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use App\Role;
+use App\UserRole;
 
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -36,7 +38,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function role()
     {
-        return $this->hasOne('App\Role')->using('App\UserRole');
+        return $this->hasOne(Role::class)->using(UserRole::class);
     }
 
 
