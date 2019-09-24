@@ -45,9 +45,12 @@ class Authenticate
         {
             $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
             $currentuser = User::find($payload['sub']);
-            dd($this->auth->guard($guard)->user());
             if($payload['exp'] < Carbon::now()->timestamp)
             {
+                if(DB::table('users')->where('id', $currentuser->id)->first()->jti == $payload['jti'])
+                {
+                    DB::table('users')->where('id', $currentuser->id)->update(['status' => 0, 'jti' => null]);
+                }
                 return response('Token is Expired.', 401);
             }
             
@@ -61,6 +64,8 @@ class Authenticate
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
                 return response()->json('Unauthorized', 401);
             }
+            $new_payload = $this->auth->guard($guard)->payload();
+            DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti']]);
             return $next($request)->header("Authorization", "Bearer " . $new_token);
         }
             catch (JWTException $e)
