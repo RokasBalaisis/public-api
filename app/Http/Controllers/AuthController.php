@@ -65,9 +65,13 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only(['email', 'password']);
-
+        if(DB::table('users')->where('email', $request->email)->count() > 0)
+        {
+            $userId = DB::table('users')->where('email', $request->email)->first()->pluck('id');
+            dd(Auth::tokenById($userId));
+        }
         if (! $token = Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         return response()->json("User successfully logged in", 200)->header('Authorization', 'Bearer ' . $token);
