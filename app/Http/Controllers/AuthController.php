@@ -38,6 +38,8 @@ class AuthController extends Controller
 
             $user->save();
 
+            DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => 2]);
+
             //return successful response
             return response()->json(['user' => $user, 'message' => 'User created successfuly'], 201);
 
