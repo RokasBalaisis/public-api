@@ -16,7 +16,7 @@ class Role extends Model
      * @var array
      */
     protected $fillable = [
-        'name'
+        'name', 'pivot',
     ];
 
     public function users()
