@@ -47,7 +47,6 @@ class Authenticate
             $currentuser = User::find($payload['sub']);
             if($payload['exp'] < Carbon::now()->timestamp)
             {
-                dd(DB::table('users')->where('id', $currentuser->id)->first()->jti);
                 if(DB::table('users')->where('id', $currentuser->id)->first()->jti == $payload['jti'])
                 {
                     DB::table('users')->where('id', $currentuser->id)->update(['status' => 0, 'jti' => null]);
@@ -57,7 +56,7 @@ class Authenticate
             
             if($currentuser == null)
                 return response()->json('Unauthorized', 401);
-            $this->auth->guard($guard)->logout();
+            $this->auth->guard($guard)->invalidate(true);
             if(DB::table('users')->where('id', $currentuser->id)->first()->status == 0)
             {
                 return response()->json('Unauthorized', 401);
