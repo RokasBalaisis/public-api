@@ -47,6 +47,7 @@ class Authenticate
             $currentuser = User::find($payload['sub']);
             if($payload['exp'] < Carbon::now()->timestamp)
             {
+                dd(DB::table('users')->where('id', $currentuser->id)->first()->jti);
                 if(DB::table('users')->where('id', $currentuser->id)->first()->jti == $payload['jti'])
                 {
                     DB::table('users')->where('id', $currentuser->id)->update(['status' => 0, 'jti' => null]);
