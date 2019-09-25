@@ -21,7 +21,10 @@ class UserRoleTableSeeder extends Seeder
         foreach($users as $user)
         {
             if($adminIsSet == false)
+            {
                 DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $rolesIds[0]]);
+                $adminIsSet = true;
+            }
             else
                 DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $faker->randomElement($rolesIds)]);
         }
