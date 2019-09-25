@@ -70,7 +70,6 @@ class Authenticate
             {
                 if($user->exp < Carbon::now()->timestamp)
                 {
-                    dd('inside check');
                     DB::table('users')->where('id', $user->id)->update(['status' => 0]);
                 }
             }
