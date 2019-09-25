@@ -6,6 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 class AuthController extends Controller
@@ -19,30 +20,22 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         //validate incoming request 
-        $this->validate($request, [
-            'username' => 'required|string',
-            'registration_email' => 'required|email',
-            'registration_password' => 'required',
+        $validator = Validator::make($request, [
+            'username' => ['required', 'string', 'without_spaces', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
+            'registration_email' => ['required', 'email', 'unique:users'],
+            'registration_password' => ['required', 'min:6', 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[!$#%]).*$/'],
         ]);
 
-        if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
-        {
-            return response()->json(['message' => ['User with this email already exists!']], 409);
+        if ($validator->fails()) {
+            return response()->json([ 'message'=> $validator->errors()->first() ], 401);
         }
-
         try {
-            $user = new User;
-            $user->name = $request->input('username');
-            $user->email = $request->input('registration_email');
-            $plainPassword = $request->input('registration_password');
-            $user->password = app('hash')->make($plainPassword);
-
-            $user->save();
-
+            DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password)]);
+            $user = DB::table('users')->where('username', $request->username)->where('email', $request->registration_email)->first();
             DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => 2]);
 
             //return successful response
-            return response()->json(['user' => $user, 'message' => 'User created successfuly'], 201);
+            return response()->json(['user' => $user, 'message' => 'User registration was successful'], 201);
 
         } catch (\Exception $e) {
             //return error message
@@ -61,7 +54,7 @@ class AuthController extends Controller
     {
           //validate incoming request 
         $this->validate($request, [
-            'email' => 'required|string|email',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
