@@ -27,7 +27,7 @@ class AuthController extends Controller
 
         if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
         {
-            return response()->json(['message' => 'User with this email already exists!'], 409);
+            return response()->json(['message' => ['User with this email already exists!']], 409);
         }
 
         try {
