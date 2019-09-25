@@ -64,19 +64,8 @@ class Authenticate
             }
             $new_payload = \JWTAuth::manager()->getJWTProvider()->decode($new_token);
             DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti'], 'exp' => $new_payload['exp']]);
-            $users = DB::table('users')->get();
-
-            foreach($users as $user)
-            {
-                if($user->exp < Carbon::now()->timestamp)
-                {
-                    DB::table('users')->where('id', $user->id)->update(['status' => 0]);
-                }
-            }
+            DB::table('users')->where('exp', '<', Carbon::now()->timestamp)->update(['status' => 0]);
             return $next($request)->header("Authorization", "Bearer " . $new_token);
-         
-
-
     }
     
 }
