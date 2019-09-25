@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('password', 100);
             $table->tinyInteger('status')->default(0);
             $table->string('jti', 50)->nullable();
+            $table->integer('exp')->nullable();
             $table->timestamps();
         });
     }

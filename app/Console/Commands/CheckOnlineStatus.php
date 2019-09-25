@@ -4,6 +4,7 @@ namespace App\Console\Commands;
  
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
  
 class CheckOnlineStatus extends Command
 {
@@ -38,6 +39,15 @@ class CheckOnlineStatus extends Command
      */
     public function handle()
     {
-        //
+        // Carbon::now()->timestamp
+        $users = DB::table('users')->get();
+
+        foreach($users as $user)
+        {
+            if($user->exp < Carbon::now()->timestamp)
+            {
+                DB::table('users')->where('id', $user->id)->update(['status' => 0]);
+            }
+        }
     }
 }
