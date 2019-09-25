@@ -6,6 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -68,7 +69,7 @@ class AuthController extends Controller
         if(DB::table('users')->where('email', $request->email)->count() > 0)
         {
             $result = DB::table('users')->where('email', $request->email)->first();
-            if(DB::table('users')->where('id', $result->id)->first()->status == 1)
+            if(DB::table('users')->where('id', $result->id)->first()->status == 1 && $result->exp > Carbon::now()->timestamp)
             {
                 return response()->json(['error' => 'User is already logged in'], 401);
             }
