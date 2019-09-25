@@ -43,6 +43,8 @@ class Authenticate
         
             $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
             $currentuser = User::find($payload['sub']);
+            var_dump(\JWTAuth::getToken()->get());
+            var_dump($this->auth->guard($guard)->tokenById($payload['sub']));
             if($payload['exp'] < Carbon::now()->timestamp)
             {
                 if(DB::table('users')->where('id', $currentuser->id)->first()->jti == $payload['jti'])
