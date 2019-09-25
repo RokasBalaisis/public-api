@@ -68,6 +68,7 @@ class Authenticate
 
             foreach($users as $user)
             {
+                dd(Carbon::now()->timestamp);
                 if($user->exp < Carbon::now()->timestamp)
                 {
                     DB::table('users')->where('id', $user->id)->update(['status' => 0]);
