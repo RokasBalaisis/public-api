@@ -82,5 +82,13 @@ class AuthController extends Controller
         return response()->json("User successfully logged in", 200)->header('Authorization', 'Bearer ' . $token);
     }
 
+
+    public function logout(Request $request)
+    {
+        DB::table('users')->where('id', Auth::user()->getAuthIdentifier())->update(['status' => 0]);
+        Auth::logout();
+
+        return response()->json("Logged out", 200);
+    }
     
 }
