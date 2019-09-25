@@ -39,7 +39,7 @@ class Authenticate
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null, Schedule $schedule)
+    public function handle($request, Closure $next, $guard = null)
     {
         
             $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
@@ -64,7 +64,15 @@ class Authenticate
             }
             $new_payload = \JWTAuth::manager()->getJWTProvider()->decode($new_token);
             DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti'], 'exp' => $new_payload['exp']]);
-            $schedule->command('online:status');
+            $users = DB::table('users')->get();
+
+            foreach($users as $user)
+            {
+                if($user->exp < Carbon::now()->timestamp)
+                {
+                    DB::table('users')->where('id', $user->id)->update(['status' => 0]);
+                }
+            }
             return $next($request)->header("Authorization", "Bearer " . $new_token);
          
 
