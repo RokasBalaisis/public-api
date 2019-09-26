@@ -31,7 +31,7 @@ class AuthController extends Controller
         //     return response()->json(['message' => ['User with this email already exists!']], 409);
         // }
         if ($validator->fails()) {
-            return response()->json([$validator->errors()], 401);
+            return response()->json($validator->errors(), 401);
         }
         try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password)]);
