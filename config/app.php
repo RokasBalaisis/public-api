@@ -55,7 +55,7 @@ return [
     | ahead and set this to a sensible default for you out of the box.
     |
     */
-    'timezone' => 'Europe/Vilnius',
+    'timezone' => env('APP_TIMEZONE'),
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
