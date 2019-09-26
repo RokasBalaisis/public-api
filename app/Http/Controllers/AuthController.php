@@ -19,12 +19,19 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        $customNames = array(
+            'registration_email' => 'email',
+            'registration_password' => 'password'
+         );
+
         //validate incoming request 
         $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
-            'registration_email' => ['exists:email','required', 'email', 'unique:users'],
-            'registration_password' => ['exists:password','required', 'min:6', 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[!$#%]).*$/'],
+            'registration_email' => ['required', 'email', 'unique:users'],
+            'registration_password' => ['required', 'min:6', 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[!$#%]).*$/'],
         ]);
+
+        $validator->setAttributeNames($customNames);
 
         // if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
         // {
