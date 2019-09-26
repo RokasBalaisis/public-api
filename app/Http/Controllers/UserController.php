@@ -34,22 +34,20 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'without_spaces', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:6', 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[!$#%]).*$/'],
             'role_id' => ['required'],
         ]);
         
-            dd($request);
-
-        // if ($validator->fails()) {
-        //     return response()->json([ 'message'=> $validator->errors()->first() ], 401);
-        // }
+        if ($validator->fails()) {
+            return response()->json([ 'message'=> $validator->errors()->first() ], 401);
+        }
         try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password)]);
             $user = DB::table('users')->where('username', $request->username)->where('email', $request->registration_email)->first();
-            DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $request->role_id]);
+            DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $request->role_idv]);
 
             //return successful response
             return response()->json(['user' => $user, 'message' => 'User created successfuly'], 201);
