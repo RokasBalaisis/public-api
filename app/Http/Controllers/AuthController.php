@@ -20,13 +20,16 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         //validate incoming request 
-        $validator = Validator::make($request, [
+        $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'without_spaces', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'registration_email' => ['required', 'email', 'unique:users'],
             'registration_password' => ['required', 'min:6', 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[!$#%]).*$/'],
         ]);
 
-
+        // if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
+        // {
+        //     return response()->json(['message' => ['User with this email already exists!']], 409);
+        // }
         if ($validator->fails()) {
             return response()->json([ 'message'=> $validator->errors()->first() ], 401);
         }
