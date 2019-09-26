@@ -41,8 +41,10 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if( !$payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get()))
+        if($this->auth->guard($guard)->guest())
             return response()->json('Unauthorized', 401);
+        $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
+            
             $currentuser = User::find($payload['sub']);
             if($payload['exp'] < Carbon::now()->timestamp)
             {
