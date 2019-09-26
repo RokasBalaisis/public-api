@@ -22,7 +22,6 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->get();
-        $users->makeHidden('created_at');
         return response()->json(['users' => $users], 200);
     }
 
