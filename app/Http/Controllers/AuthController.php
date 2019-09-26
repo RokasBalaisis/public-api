@@ -42,7 +42,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 401);
         }
         try {
-            DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password), 'created_at' => Carbon::now('Europe/Vilnius'), 'updated_at' => Carbon::now('Europe/Vilnius')]);
+            DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
             $user = DB::table('users')->where('username', $request->username)->where('email', $request->registration_email)->first();
             DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => 2]);
 
