@@ -20,7 +20,11 @@ $router->get('/', function () use ($router) {
 
     $router->post('login', ['uses' => 'AuthController@login'], function (){});
     $router->post('register', ['uses' => 'AuthController@register'], function (){});
-    $router->post('logout', ['uses' => 'AuthController@logout'], function (){});
+        
+    $router->group(['middleware' => 'auth:api'], function () use ($router) {
+        $router->post('logout', ['uses' => 'AuthController@logout'], function (){});
+    });
+    
 
     $router->group(['prefix' => 'users'], function () use ($router) {
 
