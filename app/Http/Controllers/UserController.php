@@ -66,7 +66,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::find($id);
+        $user = User::with('role')->find($id);
         return response()->json(['user' => $user], 200);
     }
 
