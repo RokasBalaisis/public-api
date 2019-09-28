@@ -11,7 +11,7 @@ class RoleMiddleware
     {
     
         $user = Auth::user();
-    
+        dd($user->hasRole('admin'));
         foreach($roles as $role) {
             if($user->hasRole($role))
                 return $next($request);
