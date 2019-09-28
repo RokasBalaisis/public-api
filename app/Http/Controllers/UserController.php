@@ -51,12 +51,13 @@ class UserController extends Controller
             $user = DB::table('users')->where('username', $request->username)->where('email', $request->email)->first();
             DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $request->role_id]);
 
+            $user = User::with('role')->find($user->id);
             //return successful response
             return response()->json(['user' => $user, 'message' => 'User created successfuly'], 201);
 
         } catch (\Exception $e) {
             //return error message
-            return response()->json(['message' => 'User Registration Failed!'], 409);
+            return response()->json(['message' => 'User creation Failed!'], 409);
         }
     }
 
