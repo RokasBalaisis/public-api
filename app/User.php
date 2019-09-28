@@ -45,7 +45,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function hasRole($role)
     {
         $role_id = DB::table('user_role')->where('user_id', $this->id)->first();
-        $result =  DB::table('roles')->where('id', $role_id->role_id)->first();
+        $result = DB::table('roles')->where('id', $role_id->role_id)->first();
         return $result->name;
     }
 
