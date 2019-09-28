@@ -110,7 +110,7 @@ class UserController extends Controller
                 $user->password = app('hash')->make($request->password);
             if($request->role != null)
             {
-                dd("passed");
+                var_dump("passed");
                 DB::table('user_role')->where('user_id', '==', $user->id)->update('role_id', $request->selectedRole);
             }
                 
