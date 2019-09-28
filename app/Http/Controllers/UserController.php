@@ -108,8 +108,9 @@ class UserController extends Controller
                 $user->email = $request->email;
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
+                dd($request->selectedRole->id);
             if($request->selectedRole != null)
-                $user->role()->sync([$request->selectedRole->id]);
+                DB::table('user_role')->where('user_id', $user->id)->updateOrInsert(['user_id' => $user->id, 'role_id' => $request->selectedRole->id]);
             $user->save();
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
