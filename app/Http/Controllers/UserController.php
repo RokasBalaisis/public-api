@@ -47,9 +47,9 @@ class UserController extends Controller
             return response()->json([ 'message'=> $validator->errors()->first() ], 401);
         }
         try {
-            DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password)]);
-            $user = DB::table('users')->where('username', $request->username)->where('email', $request->registration_email)->first();
-            DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $request->role_idv]);
+            DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password)]);
+            $user = DB::table('users')->where('username', $request->username)->where('email', $request->email)->first();
+            DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $request->role_id]);
 
             //return successful response
             return response()->json(['user' => $user, 'message' => 'User created successfuly'], 201);
