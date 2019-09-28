@@ -80,20 +80,37 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required'
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
-        }
-
         if(User::find($id) === null)
             return response()->json(['message' => 'User with specified id does not exist'], 404);
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->save();
-        return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
+
+        $validator = Validator::make(Input::all(), [
+            'username' => ['string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
+            'email' => ['email', 'unique:users'],
+            'selectedRole' => ['exists:role,id'],
+            'password' => ['min:6', 'alpha_dash'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        try {
+            $user = User::find($id);
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->password = app('hash')->make($request->password);
+            $user->role()->sync([$request->role]);
+            $user->save();
+            //return successful response
+            return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
+
+        } catch (\Exception $e) {
+            //return error message
+            return response()->json(['message' => 'User edit failed!'], 409);
+        }
+
+
+
+        
     }
 
     /**
