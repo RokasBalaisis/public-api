@@ -101,7 +101,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        //try {
+        try {
             if($request->username != null)
                 $user->username = $request->username;
             if($request->email != null)    
@@ -109,15 +109,15 @@ class UserController extends Controller
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
             if($request->selectedRole != null)
-                DB::table('user_role')->where('user_id', $user->id)->updateOrInsert(['user_id' => $user->id, 'role_id' => $request->selectedRole]);
+                $user->role()->sync([$request->selectedRole]);
             $user->save();
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
 
-       // } catch (\Exception $e) {
+        } catch (\Exception $e) {
             //return error message
-        //    return response()->json(['message' => 'User edit failed!'], 409);
-        //}
+            return response()->json(['message' => 'User edit failed!'], 409);
+        }
 
 
 
