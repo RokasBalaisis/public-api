@@ -17,6 +17,6 @@ class UsersTableSeeder extends Seeder
         // create initial admin account
         DB::table('users')->insert(['username' => "Admin", 'email' => 'admin@admin.lt', 'password' => Hash::make('admin')]);
         // create 10 users using the user factory
-        factory(App\User::class, 10)->create();
+        factory(App\User::class, 100)->create();
     }
 }
