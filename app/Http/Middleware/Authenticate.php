@@ -42,7 +42,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if($this->auth->guard($guard)->guest())
-            return response()->json('Unauthorized', 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
             
             $currentuser = User::find($payload['sub']);
@@ -52,17 +52,17 @@ class Authenticate
                 {
                     DB::table('users')->where('id', $currentuser->id)->update(['status' => 0, 'jti' => null]);
                 }
-                return response('Token is Expired.', 401);
+                return response(['message' => 'Token is Expired.'], 401);
             }
             
             if($currentuser == null)
-                return response()->json('Unauthorized', 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
             if(DB::table('users')->where('id', $currentuser->id)->first()->status == 0)
             {
-                return response()->json('Unauthorized', 401);
+                return response()->json(['message' => 'Unauthorized'], 401);
             }
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
-                return response()->json('Unauthorized', 401);
+                return response()->json(['message' => 'Unauthorized'], 401);
             }
             $new_payload = \JWTAuth::manager()->getJWTProvider()->decode($new_token);
             DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti'], 'exp' => $new_payload['exp']]);
@@ -70,13 +70,3 @@ class Authenticate
     }
     
 }
-
-
-// catch (JWTException $e) {
-//     if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-//         return response("Token is Invalid.");
-//     }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-//         return response('Token is Expired.');
-//     }else{
-//         return response('Unauthorized.', 401);
-//     }
