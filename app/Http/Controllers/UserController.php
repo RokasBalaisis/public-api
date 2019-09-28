@@ -109,7 +109,11 @@ class UserController extends Controller
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
             if($request->selectedRole != null)
-                DB::table('user_role')->where('user_id', $user->id)->update('role_id', $request->selectedRole);
+            {
+                dd("passed");
+                DB::table('user_role')->where('user_id', '==', $user->id)->update('role_id', $request->selectedRole);
+            }
+                
             $user->save();
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
