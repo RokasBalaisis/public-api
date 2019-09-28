@@ -47,7 +47,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
         try {
-            DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password)]);
+            DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
             $user = DB::table('users')->where('username', $request->username)->where('email', $request->email)->first();
             DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $request->role_id]);
 
@@ -112,7 +112,6 @@ class UserController extends Controller
                 $user->password = app('hash')->make($request->password);
             if($request->role != null)
                 $user->role()->sync([$request->role]);
-                
             $user->save();
             $user = User::with('role')->find($id);
             //return successful response
