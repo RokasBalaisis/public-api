@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 use App\User;
 use App\Role;
 use App\UserRole;
@@ -109,10 +110,7 @@ class UserController extends Controller
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
             if($request->role != null)
-            {
-                var_dump("passed");
-                DB::table('user_role')->where('user_id', '==', $user->id)->update('role_id', $request->selectedRole);
-            }
+                DB::table('user_role')->where('user_id', '==', $user->id)->updateOrInsert(['user_id' => $user->id, 'role_id', $request->role]);
                 
             $user->save();
             //return successful response
