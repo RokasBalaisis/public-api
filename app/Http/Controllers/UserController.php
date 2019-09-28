@@ -85,7 +85,7 @@ class UserController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 401);
+            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
 
         if(User::find($id) === null)

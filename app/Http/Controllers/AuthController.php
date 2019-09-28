@@ -20,26 +20,14 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $customNames = array(
-            'registration_email' => 'email',
-            'registration_password' => 'password'
-         );
-
-        //validate incoming request 
         $validator = Validator::make(Input::all(), [
             'username' => ['required', 'string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'registration_email' => ['required', 'email', 'unique:users,email'],
             'registration_password' => ['required', 'min:6', 'alpha_dash'],
         ]);
 
-        $validator->setAttributeNames($customNames);
-
-        // if(DB::table('users')->where('email', $request->input('registration_email'))->count() > 0)
-        // {
-        //     return response()->json(['message' => ['User with this email already exists!']], 409);
-        // }
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 401);
+            return response()->json($validator->errors(), 422);
         }
         try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->registration_email, 'password' => app('hash')->make($request->registration_password), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
@@ -80,7 +68,7 @@ class AuthController extends Controller
             }
         }
         if (! $token = Auth::attempt($credentials)) {
-            return response()->json(['message' => ['Invalid credentials']], 401);
+            return response()->json(['message' => ['Invalid credentials']], 422);
         }
         $payload = Auth::payload();
         DB::table('users')->where('email', $request->email)->update(['status' => 1, 'jti' => $payload['jti'], 'exp' => $payload['exp']]);
