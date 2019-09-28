@@ -40,7 +40,7 @@ class UserController extends Controller
             'username' => ['required', 'string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:6'],
-            'role_id' => ['required'],
+            'role' => ['required'],
         ]);
         
         if ($validator->fails()) {
