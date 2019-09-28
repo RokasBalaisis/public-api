@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -44,8 +45,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function hasRole($role)
     {
-        $role_id = DB::table('user_role')->where('user_id', $this->id)->first();
-        return DB::table('roles')->where('id', $role_id->role_id)->first()->get('name');
+        $role_id = DB::table('user_role')->where('user_id', $this->id)->first()->get('role_id');
+        return DB::table('roles')->where('id', $role_id)->first()->get('name');
     }
 
 
