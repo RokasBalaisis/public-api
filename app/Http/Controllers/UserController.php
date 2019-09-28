@@ -108,7 +108,7 @@ class UserController extends Controller
                 $user->email = $request->email;
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
-                dd($request->selectedRole->id);
+                dd($request->selectedRole);
             if($request->selectedRole != null)
                 DB::table('user_role')->where('user_id', $user->id)->updateOrInsert(['user_id' => $user->id, 'role_id' => $request->selectedRole->id]);
             $user->save();
