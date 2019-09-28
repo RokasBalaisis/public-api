@@ -110,7 +110,7 @@ class UserController extends Controller
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
             if($request->role != null)
-                DB::table('user_role')->where('user_id', '==', $user->id)->update(['user_id' => $user->id, 'role_id' => $request->role]);
+                DB::table('user_role')->where('user_id', $user->id)->update(['role_id' => $request->role]);
                 
             $user->save();
             $user = User::with('role')->find($id);
