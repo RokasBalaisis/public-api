@@ -94,7 +94,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        try {
+        //try {
             $user = User::find($id);
             $user->username = $request->username;
             $user->email = $request->email;
@@ -104,10 +104,10 @@ class UserController extends Controller
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
 
-        } catch (\Exception $e) {
+       // } catch (\Exception $e) {
             //return error message
-            return response()->json(['message' => 'User edit failed!'], 409);
-        }
+         //   return response()->json(['message' => 'User edit failed!'], 409);
+        //}
 
 
 
