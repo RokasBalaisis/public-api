@@ -16,7 +16,7 @@ class RoleMiddleware
                 return $next($request);
         }
     
-        return response()->json('Role guard', 401);
+        return response()->json('Unauthorized - invalid role', 401);
     }
 }
 
