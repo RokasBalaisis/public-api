@@ -99,7 +99,7 @@ class UserController extends Controller
             $user->username = $request->username;
             $user->email = $request->email;
             $user->password = app('hash')->make($request->password);
-            $user->role()->sync([$request->role]);
+            $user->role()->sync([$request->selectedRole]);
             $user->save();
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
