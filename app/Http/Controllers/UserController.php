@@ -94,7 +94,7 @@ class UserController extends Controller
         $validator = Validator::make(Input::all(), [
             'username' => ['string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['email', 'unique:users'],
-            'selectedRole' => ['exists:role,id'],
+            'role' => ['exists:role,id'],
             'password' => ['min:6', 'alpha_dash'],
         ]);
 
@@ -108,7 +108,7 @@ class UserController extends Controller
                 $user->email = $request->email;
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
-            if($request->selectedRole != null)
+            if($request->role != null)
             {
                 dd("passed");
                 DB::table('user_role')->where('user_id', '==', $user->id)->update('role_id', $request->selectedRole);
