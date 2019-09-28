@@ -102,11 +102,14 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
         //try {
-            
-            $user->username = $request->username;
-            $user->email = $request->email;
-            $user->password = app('hash')->make($request->password);
-            //$user->role()->sync([$request->selectedRole]);
+            if($request->username != null)
+                $user->username = $request->username;
+            if($request->email != null)    
+                $user->email = $request->email;
+            if($request->password != null)
+                $user->password = app('hash')->make($request->password);
+            if($request->selectedRole != null)
+                $user->role()->sync([$request->selectedRole]);
             $user->save();
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
