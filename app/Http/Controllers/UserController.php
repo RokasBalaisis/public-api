@@ -81,13 +81,13 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(User::find($id) === null)
+        if(User::with('role')->find($id) === null)
         {
             return response()->json(['message' => 'User with specified id does not exist'], 404);
         }
         else
         {
-            $user = User::find($id);
+            $user = User::with('role')->find($id);
         }
             
 
@@ -112,7 +112,7 @@ class UserController extends Controller
                 $user->role()->sync([$request->selectedRole]);
             $user->save();
             //return successful response
-            return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user->with('role')], 200);
+            return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
 
         } catch (\Exception $e) {
             //return error message
