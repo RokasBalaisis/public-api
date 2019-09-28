@@ -44,7 +44,7 @@ class UserController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 401);
+            return response()->json($validator->errors(), 422);
         }
         try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password)]);
