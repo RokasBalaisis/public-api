@@ -52,8 +52,8 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        $user = User::find($id);
-        return response()->json(['user' => $user], 200);
+        $role = Role::find($id);
+        return response()->json(['role' => $role], 200);
     }
 
 
