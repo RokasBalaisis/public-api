@@ -64,7 +64,7 @@ class AuthController extends Controller
             $result = DB::table('users')->where('email', $request->email)->first();
             if(DB::table('users')->where('id', $result->id)->first()->status == 1 && $result->exp > Carbon::now()->timestamp)
             {
-                return response()->json(['error' => ['User is already logged in']], 403);
+                return response()->json(['error' => ['User is already logged in']], 409);
             }
         }
         if (! $token = Auth::attempt($credentials)) {
