@@ -42,11 +42,9 @@ class MediaController extends Controller
             return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
 
-        $counter = 0;
         foreach($request->image as $image)
         {
-            $image->storeAs('images', 'test'.$counter);
-            $counter++;
+            $image->store('images');
         }
         return response()->json(['message' => 'Files uploaded'], 200);
     }
