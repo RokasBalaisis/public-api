@@ -40,7 +40,7 @@ class RoleController extends Controller
 
         $role = new Role;
         $role->name = $request->name;
-        $role->save;
+        $role->save();
         return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
     }
 
