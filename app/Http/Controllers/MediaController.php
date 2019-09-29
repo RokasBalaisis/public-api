@@ -41,7 +41,7 @@ class MediaController extends Controller
         if ($validator->fails()) {
             return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
-        Storage::storeAs('test', $request->image);
+        $request->image->storeAs('test', 'asd');
         return response()->json(['message' => 'Files uploaded'], 200);
     }
 
