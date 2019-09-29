@@ -18,8 +18,8 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $roles = Role::all();
-        return response()->json(['roles' => $roles], 200);
+        $media = Media::all();
+        return response()->json(['media' => $media], 200);
     }
 
 
