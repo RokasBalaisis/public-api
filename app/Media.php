@@ -16,7 +16,7 @@ class Media extends Model
      * @var array
      */
     protected $fillable = [
-
+        'name', 'short_description', 'description', 'trailer_url'
     ];
 
 
