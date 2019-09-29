@@ -96,6 +96,6 @@ class RoleController extends Controller
             return response()->json(['message' => 'Role with specified id does not exist'], 404);
         $role = Role::find($id);
         $role->delete();
-        return response()->json(['message' => 'User has been successfuly deleted'], 200);
+        return response()->json(['message' => 'Role has been successfuly deleted'], 200);
     }
 }
