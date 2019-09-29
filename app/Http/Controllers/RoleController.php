@@ -31,20 +31,17 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required',
-            'password' => 'required'
+            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 401);
+            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
 
-        if(User::where('email', $request->email)->first() != null)
-            return response()->json(['message' => 'User with email ' . $request->email . ' already exists'], 303);
-
-        $user = User::create(['name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password)]);
-        return response()->json(['message' => 'User has been successfuly created', 'user' => $user], 200);
+        $role = new Role;
+        $role->name = $request->name;
+        $role->save;
+        return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
     }
 
     /**

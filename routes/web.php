@@ -41,12 +41,12 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'roles'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api'], function () use ($router) {
+        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
             $router->get('/', ['uses' => 'RoleController@index'], function (){});
-            // $router->get('/{id}', ['uses' => 'UserController@show'], function (){});
-            // $router->post('/', ['uses' => 'UserController@store'], function (){});
-            // $router->put('/{id}', ['uses' => 'UserController@update'], function (){});
-            // $router->delete('/{id}', ['uses' => 'UserController@destroy'], function (){});
+            $router->get('/{id}', ['uses' => 'UserController@show'], function (){});
+            $router->post('/', ['uses' => 'UserController@store'], function (){});
+            $router->put('/{id}', ['uses' => 'UserController@update'], function (){});
+            $router->delete('/{id}', ['uses' => 'UserController@destroy'], function (){});
         });
 
         
