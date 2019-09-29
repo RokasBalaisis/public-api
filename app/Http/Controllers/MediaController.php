@@ -32,16 +32,16 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/'],
+            'image' => ['required', 'array', 'min:3', 'max:3'],
+            'image.*' => ['required','file','mimes:jpg,jpeg,png,bmp'],
         ]);
         
         if ($validator->fails()) {
             return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
 
-        $role = new Role;
-        $role->name = $request->name;
-        $role->save();
+        app('filesystem')->put('/test', $request->image);
         return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
     }
 
