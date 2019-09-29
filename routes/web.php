@@ -51,4 +51,18 @@ $router->get('/', function () use ($router) {
 
         
     });
+
+    $router->group(['prefix' => 'media'], function () use ($router) {
+
+        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+            $router->get('/', ['uses' => 'MediaController@index'], function (){});
+            $router->get('/{id}', ['uses' => 'MediaController@show'], function (){});
+            $router->post('/', ['uses' => 'MediaController@store'], function (){});
+            $router->put('/{id}', ['uses' => 'MediaController@update'], function (){});
+            $router->delete('/{id}', ['uses' => 'MediaController@destroy'], function (){});
+        });
+
+        
+    });
+    
     
