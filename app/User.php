@@ -51,7 +51,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return true;
     }
 
-
+    public function getRole()
+    {
+        $role_id = DB::table('user_role')->where('user_id', $this->id)->first();
+        $result = DB::table('roles')->where('id', $role_id->role_id)->first();
+        return $result;
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -71,7 +76,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [
-            'role' => $this->role()
+            'role' => $this->getRole()
         ];
     }
 }
