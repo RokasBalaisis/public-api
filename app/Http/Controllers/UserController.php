@@ -70,6 +70,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        if(User::find($id) === null)
+            return response()->json(['message' => 'User with specified id does not exist'], 404);
         $user = User::with('role')->find($id);
         return response()->json(['user' => $user], 200);
     }
@@ -85,13 +87,9 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         if(User::with('role')->find($id) === null)
-        {
             return response()->json(['message' => 'User with specified id does not exist'], 404);
-        }
-        else
-        {
-            $user = User::with('role')->find($id);
-        }
+        $user = User::with('role')->find($id);
+
             
 
         $validator = Validator::make(Input::all(), [

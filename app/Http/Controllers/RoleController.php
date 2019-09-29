@@ -52,6 +52,8 @@ class RoleController extends Controller
      */
     public function show($id)
     {
+        if(Role::find($id) === null)
+        return response()->json(['message' => 'Role with specified id does not exist'], 404);
         $role = Role::find($id);
         return response()->json(['role' => $role], 200);
     }
@@ -66,20 +68,20 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if(Role::find($id) === null)
+            return response()->json(['message' => 'Role with specified id does not exist'], 404);
+        $role = Role::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => 'required'
+            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 401);
+            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
 
-        if(User::find($id) === null)
-            return response()->json(['message' => 'User with specified id does not exist'], 404);
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->save();
-        return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
+        $role->name = $request->name;
+        $role->save();
+        return response()->json(['message' => 'Role has been successfuly updated', 'role' => $role], 200);
     }
 
     /**
@@ -90,10 +92,10 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        if(User::find($id) === null)
-            return response()->json(['message' => 'User with specified id does not exist'], 404);
-        $user = User::find($id);
-        $user->delete();
+        if(Role::find($id) === null)
+            return response()->json(['message' => 'Role with specified id does not exist'], 404);
+        $role = Role::find($id);
+        $role->delete();
         return response()->json(['message' => 'User has been successfuly deleted'], 200);
     }
 }
