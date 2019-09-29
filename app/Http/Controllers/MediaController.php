@@ -45,7 +45,7 @@ class MediaController extends Controller
         $counter = 0;
         foreach($request->image as $image)
         {
-            $image->storeAs('images', 'image['.$counter.'].'.getClientOriginalExtension());
+            $image->storeAs('images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
             $counter++;
         }
         return response()->json(['message' => 'Files uploaded'], 200);
