@@ -41,8 +41,8 @@ class MediaController extends Controller
             return response()->json([ 'message'=> $validator->errors()->first() ], 422);
         }
 
-        app('filesystem')->put('/test', $request->image);
-        return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
+        app('filesystem')->storeAs('test', $request->image);
+        return response()->json(['message' => 'Files uploaded'], 200);
     }
 
     /**
