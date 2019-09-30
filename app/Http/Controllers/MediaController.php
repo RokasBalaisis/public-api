@@ -119,7 +119,13 @@ class MediaController extends Controller
         if(Media::find($id) === null)
             return response()->json(['message' => 'Media with specified id does not exist'], 404);
         $role = Media::find($id);
+        $entries = DB::table('media_files')->where('media_id', $id)->get()->toArray();
+        DB::table('media_files')->where('media_id', $id)->delete();
         $role->delete();
+        foreach($entries as $entry)
+        {
+            Storage::delete('/media'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
+        }      
         return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
 }
