@@ -88,13 +88,12 @@ class UserController extends Controller
     {
         if(User::with('role')->find($id) === null)
             return response()->json(['message' => 'User with specified id does not exist'], 404);
-        $user = User::with('role')->find($id);
 
             
 
         $validator = Validator::make($request->all(), [
-            'username' => ['required', 'string', 'max:50', 'unique:users,username,'. $user->id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
-            'email' => ['required', 'email', 'unique:users,email,'. $user->id],
+            'username' => ['required', 'string', 'max:50', 'unique:users,username,'. $id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
+            'email' => ['required', 'email', 'unique:users,email,'. $id],
             'role_id' => ['required', 'exists:roles,id'],
             'password' => ['required', 'min:6', 'alpha_dash'],
         ]);
@@ -103,6 +102,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
         try {
+            $user = User::with('role')->find($id);
             if($request->username != null)
                 $user->username = $request->username;
             if($request->email != null)    
