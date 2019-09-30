@@ -93,7 +93,7 @@ class UserController extends Controller
             
 
         $validator = Validator::make($request->all(), [
-            'username' => ['required','string', 'max:50', 'unique:users,username,'. $user->id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
+            'username' => ['string', 'max:50', 'unique:users,username,'. $user->id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['email', 'unique:users,email,'. $user->id],
             'role_id' => ['exists:roles,id'],
             'password' => ['min:6', 'alpha_dash'],
@@ -111,7 +111,7 @@ class UserController extends Controller
                 $user->password = app('hash')->make($request->password);
             if($request->role_id != null)
                 $user->role()->sync([$request->role_id]);
-            $user->save();
+            $user->update();
             $user = User::with('role')->find($id);
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
