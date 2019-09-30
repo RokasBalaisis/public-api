@@ -124,7 +124,7 @@ class MediaController extends Controller
         $role->delete();
         foreach($entries as $entry)
         {
-            Storage::delete('/media'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
+            Storage::delete('/media'.'/'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
         }      
         return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
