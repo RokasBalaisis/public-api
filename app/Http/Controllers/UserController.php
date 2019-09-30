@@ -92,7 +92,7 @@ class UserController extends Controller
 
             
 
-        $validator = Validator::make(Input::all(), [
+        $validator = Validator::make($request->all(), [
             'username' => ['string', 'max:50', 'unique:users,username,'. $user->id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['email', 'unique:users,email,'. $user->id],
             'role_id' => ['exists:roles,id'],
