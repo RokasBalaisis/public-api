@@ -19,6 +19,8 @@ class CreateMediaFilesTable extends Migration
             $table->string('folder');
             $table->string('name');
             $table->timestamps(3);
+
+            $table->foreign('media_id')->references('id')->on('media');
         });
     }
 
