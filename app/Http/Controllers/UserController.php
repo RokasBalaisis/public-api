@@ -98,7 +98,7 @@ class UserController extends Controller
             'role_id' => ['required', 'exists:roles,id'],
             'password' => ['required', 'min:6', 'alpha_dash'],
         ]);
-
+            dd($request->all());
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
