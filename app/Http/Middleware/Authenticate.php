@@ -61,6 +61,7 @@ class Authenticate
             {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
+            $this->auth->guard($guard)->invalidate(true);
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
