@@ -36,13 +36,6 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        if($exception instanceof NotFoundHttpException) {
-
-    
-            // This gives me a 404 in the headers
-            return response()->json(['message' => 'specified endpoint not found'], 404);
-    
-        }
         parent::report($exception);
     }
 
