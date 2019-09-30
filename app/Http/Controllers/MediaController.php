@@ -116,10 +116,10 @@ class MediaController extends Controller
      */
     public function destroy($id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
+        if(Media::find($id) === null)
+            return response()->json(['message' => 'Media with specified id does not exist'], 404);
+        $role = Media::find($id);
         $role->delete();
-        return response()->json(['message' => 'Role has been successfuly deleted'], 200);
+        return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
 }

@@ -20,7 +20,7 @@ class CreateMediaFilesTable extends Migration
             $table->string('name');
             $table->timestamps(3);
 
-            $table->foreign('media_id')->references('id')->on('media');
+            $table->foreign('media_id')->references('id')->on('media')->onDelete('cascade');
         });
     }
 
