@@ -6,7 +6,9 @@ use Exception;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -49,7 +51,8 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => 'Not Found!'], 404);
+            //return response()->json(['message' => 'Not Found!'], 404);
+            return new JsonResponse(['message' => 'Not Found!'], 404);
         }
         return parent::render($request, $exception);
     }
