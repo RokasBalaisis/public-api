@@ -44,6 +44,7 @@ class Authenticate
         if($this->auth->guard($guard)->guest())
             return response()->json(['message' => 'Unauthorized'], 401);
         $payload = \JWTAuth::manager()->getJWTProvider()->decode(\JWTAuth::getToken()->get());
+        $currentToken = \JWTAuth::getToken()->get();
             
             $currentuser = User::find($payload['sub']);
             if($payload['exp'] < Carbon::now()->timestamp)
@@ -61,10 +62,10 @@ class Authenticate
             {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
-            $this->auth->guard($guard)->invalidate(true);
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
+            \JWTAuth::invalidate($currentToken);
             $new_payload = \JWTAuth::manager()->getJWTProvider()->decode($new_token);
             DB::table('users')->where('id', $currentuser->id)->update(['jti' => $new_payload['jti'], 'exp' => $new_payload['exp']]);
             return $next($request)->header("Authorization", "Bearer " . $new_token);
