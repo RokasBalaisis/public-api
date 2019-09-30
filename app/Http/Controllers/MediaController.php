@@ -38,7 +38,7 @@ class MediaController extends Controller
             'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/'],
             'short_description' => ['required'],
             'description' => ['required'],
-            'trailer_url' => ['required', 'regex:/^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/'],
+            'trailer_url' => ['required', 'regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
             'image' => ['required', 'array', 'min:3', 'max:3'],
             'image.*' => ['required','file','mimes:jpg,jpeg,png,bmp'],
         ]);
@@ -59,7 +59,7 @@ class MediaController extends Controller
         $counter = 0;
         foreach($request->image as $image)
         {
-            array_push($file_data, array(['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]));
+            array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
             $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
             $counter++;
         }
