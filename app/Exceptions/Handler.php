@@ -50,9 +50,8 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof ModelNotFoundException) {
-            //return response()->json(['message' => 'Not Found!'], 404);
-            return new JsonResponse(['message' => 'Not Found!'], 404);
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+            return response()->json(['message' => 'Not Found!'], 404);
         }
         return parent::render($request, $exception);
     }
