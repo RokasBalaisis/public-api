@@ -64,6 +64,7 @@ class MediaController extends Controller
             $counter++;
         }
         DB::table('media_files')->insert($file_data);
+        $media = Media::with('files')->find($media->id);
         return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 200);
     }
 
