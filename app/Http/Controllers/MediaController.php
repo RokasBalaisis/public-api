@@ -76,10 +76,10 @@ class MediaController extends Controller
      */
     public function show($id)
     {
-        if(Role::find($id) === null)
-        return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
-        return response()->json(['role' => $role], 200);
+        if(Media::find($id) === null)
+            return response()->json(['message' => 'Media with specified id does not exist'], 404);
+        $media = Role::with('files')->find($id);
+        return response()->json(['role' => $media], 200);
     }
 
 
