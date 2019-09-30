@@ -44,7 +44,7 @@ class MediaController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
+            return response()->json($validator->errors(), 422);
         }
 
         $media = new Media;
@@ -99,7 +99,7 @@ class MediaController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
+            return response()->json($validator->errors(), 422);
         }
 
         $role->name = $request->name;

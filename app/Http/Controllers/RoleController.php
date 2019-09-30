@@ -35,7 +35,7 @@ class RoleController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
+            return response()->json($validator->errors(), 422);
         }
 
         $role = new Role;
@@ -76,7 +76,7 @@ class RoleController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([ 'message'=> $validator->errors()->first() ], 422);
+            return response()->json($validator->errors(), 422);
         }
 
         $role->name = $request->name;
