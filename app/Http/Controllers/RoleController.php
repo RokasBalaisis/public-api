@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\User;
 use App\Role;
 
@@ -94,6 +95,8 @@ class RoleController extends Controller
     {
         if(Role::find($id) === null)
             return response()->json(['message' => 'Role with specified id does not exist'], 404);
+        if(DB::table('user_role')->where('role_id', $id)->count() > 0)
+            return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
         $role = Role::find($id);
         $role->delete();
         return response()->json(['message' => 'Role has been successfuly deleted'], 200);
