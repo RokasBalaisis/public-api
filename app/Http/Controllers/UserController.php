@@ -37,16 +37,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $this->validate($request, [
             'username' => ['required', 'string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:6'],
             'role_id' => ['required'],
         ]);
         
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
         try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
             $user = DB::table('users')->where('username', $request->username)->where('email', $request->email)->first();
