@@ -24,13 +24,11 @@ class MediaController extends Controller
     {
         $media = Media::with('files')->get();
         $media->transform(function ($entry) {
-
             $entry->files->transform(function ($item) {
                 unset($item->media_id);
         
                 return $item;
-            });
-        
+            });    
             return $entry;
         });
         return response()->json(['media' => $media], 200);
@@ -77,6 +75,14 @@ class MediaController extends Controller
         }
         DB::table('media_files')->insert(array_reverse($file_data));
         $media = Media::with('files')->find($media->id);
+        $media->transform(function ($entry) {
+            $entry->files->transform(function ($item) {
+                unset($item->media_id);
+        
+                return $item;
+            });    
+            return $entry;
+        });
         return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 200);
     }
 
@@ -91,6 +97,14 @@ class MediaController extends Controller
         if(Media::find($id) === null)
             return response()->json(['message' => 'Media with specified id does not exist'], 404);
         $media = Media::with('files')->find($id);
+        $media->transform(function ($entry) {
+            $entry->files->transform(function ($item) {
+                unset($item->media_id);
+        
+                return $item;
+            });    
+            return $entry;
+        });
         return response()->json(['role' => $media], 200);
     }
 
@@ -120,7 +134,7 @@ class MediaController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-       // try {
+       try {
             $media = Media::with('files')->find($id);
             if($request->name != null)
                 $media->name = $request->name;
@@ -149,13 +163,21 @@ class MediaController extends Controller
                 
             $media->save();
             $media = Media::with('files')->find($id);
+            $media->transform(function ($entry) {
+                $entry->files->transform(function ($item) {
+                    unset($item->media_id);
+            
+                    return $item;
+                });    
+                return $entry;
+            });
             //return successful response
             return response()->json(['message' => 'Media information has been successfuly updated', 'media' => $media], 200);
 
-        //} catch (\Exception $e) {
+        } catch (\Exception $e) {
             //return error message
-       //     return response()->json(['message' => 'Media edit failed!'], 409);
-       // }
+           return response()->json(['message' => 'Media edit failed!'], 409);
+       }
     }
 
     /**
