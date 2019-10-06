@@ -75,14 +75,10 @@ class MediaController extends Controller
         }
         DB::table('media_files')->insert(array_reverse($file_data));
         $media = Media::with('files')->find($media->id);
-        $media->transform(function ($entry) {
-            $entry->files->transform(function ($item) {
-                unset($item->media_id);
-        
-                return $item;
-            });    
-            return $entry;
-        });
+        $media->files->transform(function ($item) {
+            unset($item->media_id);
+            return $item;
+        });    
         return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 200);
     }
 
