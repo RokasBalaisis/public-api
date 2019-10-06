@@ -35,6 +35,7 @@ class MediaController extends Controller
             });
         }
         else{
+            dd($media);
             $media->files->transform(function ($item) {
                 unset($item->media_id);
         
