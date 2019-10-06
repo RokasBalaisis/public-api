@@ -93,20 +93,56 @@ class MediaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
+        if(Media::find($id) === null)
+            return response()->json(['message' => 'Media with specified id does not exist'], 404);
+
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['min:3', 'regex:/^[A-Za-z]+$/'],
+            'short_description' => [],
+            'description' => [],
+            'trailer_url' => ['regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
+            'image' => ['array', 'min:3', 'max:3'],
+            'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly updated', 'role' => $role], 200);
+        try {
+            $media = Media::with('files')->find($id);
+            if($request->name != null)
+                $media->name = $request->name;
+            if($request->short_description != null)    
+                $media->short_description = $request->short_description;
+            if($request->description != null)    
+                $media->description = $request->description;
+            if($request->trailer_url != null)
+                $media->trailer_url = app('hash')->make($request->trailer_url);
+            if($request->image != null)
+            {
+                $file_data = array();
+
+                $counter = 0;
+                foreach($request->image as $image)
+                {
+                    $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
+                    array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
+                    $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
+                    $counter++;
+                }
+                    $media->files()->sync(array_reverse($file_data));
+            }
+                
+            $media->save();
+            $media = Media::with('files')->find($id);
+            //return successful response
+            return response()->json(['message' => 'Media information has been successfuly updated', 'media' => $media], 200);
+
+        } catch (\Exception $e) {
+            //return error message
+            return response()->json(['message' => 'Media edit failed!'], 409);
+        }
     }
 
     /**
