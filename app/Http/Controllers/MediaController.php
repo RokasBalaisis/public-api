@@ -22,7 +22,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::with('files:id,folder,name,created_at,updated_at')->get();
+        $media = Media::with('files:[id,folder,name,created_at,updated_at]')->get();
         return response()->json(['media' => $media], 200);
     }
 
@@ -66,7 +66,7 @@ class MediaController extends Controller
             $counter++;
         }
         DB::table('media_files')->insert(array_reverse($file_data));
-        $media = Media::with('files:id,folder,name,created_at,updated_at')->find($media->id);
+        $media = Media::with('files:[id,folder,name,created_at,updated_at]')->find($media->id);
         return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 200);
     }
 
@@ -138,7 +138,7 @@ class MediaController extends Controller
             }
                 
             $media->save();
-            $media = Media::with('files:id,folder,name,created_at,updated_at')->find($id);
+            $media = Media::with('files:[id,folder,name,created_at,updated_at]')->find($id);
             //return successful response
             return response()->json(['message' => 'Media information has been successfuly updated', 'media' => $media], 200);
 
