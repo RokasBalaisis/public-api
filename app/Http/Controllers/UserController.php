@@ -95,14 +95,16 @@ class UserController extends Controller
             
 
         $validator = Validator::make($request->all(), [
-            'username' => ['required', 'string', 'max:50', 'unique:users,username,'. $id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
-            'email' => ['required', 'email', 'unique:users,email,'. $id],
-            'role_id' => ['required', 'exists:roles,id'],
-            'password' => ['required', 'min:6', 'alpha_dash'],
+            'username' => ['string', 'max:50', 'unique:users,username,'. $id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
+            'email' => ['email', 'unique:users,email,'. $id],
+            'role_id' => ['exists:roles,id'],
+            'password' => ['min:6', 'alpha_dash'],
         ]);
-            dd($request->all());
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+        if(!DB::table('roles')->where('id', '=', $request->role_id)->exists()){
+            return response()->json(['role_id' => ['Selected role does not exist!']], 422);
         }
         try {
             $user = User::with('role')->find($id);
