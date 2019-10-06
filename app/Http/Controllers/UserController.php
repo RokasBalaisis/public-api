@@ -38,10 +38,10 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'username' => ['required', 'string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
-            'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'min:6'],
-            'role_id' => ['required'],
+            'username' => ['required'],
+            // 'email' => ['required', 'email', 'unique:users'],
+            // 'password' => ['required', 'min:6'],
+            // 'role_id' => ['required'],
         ]);
         
         try {
