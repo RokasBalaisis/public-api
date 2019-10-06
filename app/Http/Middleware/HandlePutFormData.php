@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\ParseInputStream;
+use ParseInputStream;
 use Closure;
 
 class HandlePutFormData
