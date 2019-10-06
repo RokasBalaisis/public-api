@@ -115,7 +115,7 @@ class UserController extends Controller
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
             if($request->role_id != null)
-                $user->role()->sync([$request->role_id]);
+                $user->role()->sync([$request->role_id], false);
             $user->save();
             $user = User::with('role')->find($id);
             //return successful response
