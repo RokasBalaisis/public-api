@@ -23,14 +23,25 @@ class MediaController extends Controller
     public function index()
     {
         $media = Media::with('files')->get();
-        $media->transform(function ($entry) {
-            $entry->files->transform(function ($item) {
+        if($media->count() > 1)
+        {
+            $media->transform(function ($entry) {
+                $entry->files->transform(function ($item) {
+                    unset($item->media_id);
+            
+                    return $item;
+                });    
+                return $entry;
+            });
+        }
+        else{
+            $media->files->transform(function ($item) {
                 unset($item->media_id);
         
                 return $item;
             });    
-            return $entry;
-        });
+        }
+
         return response()->json(['media' => $media], 200);
     }
 
@@ -93,14 +104,11 @@ class MediaController extends Controller
         if(Media::find($id) === null)
             return response()->json(['message' => 'Media with specified id does not exist'], 404);
         $media = Media::with('files')->find($id);
-        $media->transform(function ($entry) {
-            $entry->files->transform(function ($item) {
-                unset($item->media_id);
-        
-                return $item;
-            });    
-            return $entry;
-        });
+        $media->files->transform(function ($item) {
+            unset($item->media_id);
+    
+            return $item;
+        });   
         return response()->json(['role' => $media], 200);
     }
 
@@ -159,14 +167,10 @@ class MediaController extends Controller
                 
             $media->save();
             $media = Media::with('files')->find($id);
-            $media->transform(function ($entry) {
-                $entry->files->transform(function ($item) {
-                    unset($item->media_id);
-            
-                    return $item;
-                });    
-                return $entry;
-            });
+            $media->files->transform(function ($item) {
+                unset($item->media_id);
+                return $item;
+            }); 
             //return successful response
             return response()->json(['message' => 'Media information has been successfuly updated', 'media' => $media], 200);
 
