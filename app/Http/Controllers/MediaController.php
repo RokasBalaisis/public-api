@@ -23,6 +23,13 @@ class MediaController extends Controller
     public function index()
     {
         $media = Media::with('files')->get();
+        foreach($media as $entry)
+        {
+            foreach($entry->files() as $file)
+            {
+                $file->makeHidden('media_id');
+            }
+        }
         return response()->json(['media' => $media], 200);
     }
 

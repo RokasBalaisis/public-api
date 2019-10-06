@@ -30,6 +30,6 @@ class Media extends Model
 
     public function files()
     {
-        return $this->hasMany('App\MediaFile', 'media_id')->select(array('id', 'folder', 'name', 'created_at', 'updated_at'));
+        return $this->hasMany('App\MediaFile', 'media_id');
     }
 }
