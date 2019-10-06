@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Filesystem\Filesystem;
 use App\User;
 use App\Role;
 use App\Media;
@@ -129,7 +128,7 @@ class MediaController extends Controller
             Storage::delete('/media'.'/'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
         }
         if(count(glob('/media'.'/'.$entry->media_id.'/'.$entry->folder, GLOB_NOSORT)) === 0)
-            File::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
+            Storage::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
         return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
 }
