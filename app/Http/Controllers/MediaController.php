@@ -34,7 +34,7 @@ class MediaController extends Controller
                 return $entry;
             });
         }
-        else{
+        else if($media->count() == 1){
             $media = Media::with('files')->first();
             $media->files->transform(function ($item) {
                 unset($item->media_id);
