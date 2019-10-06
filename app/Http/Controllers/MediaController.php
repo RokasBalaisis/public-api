@@ -23,7 +23,7 @@ class MediaController extends Controller
     public function index()
     {
         $media = Media::with('files')->get();
-        $media->files->makeHidden('media_id');
+        $media->files()->makeHidden('media_id');
         return response()->json(['media' => $media], 200);
     }
 
@@ -68,7 +68,7 @@ class MediaController extends Controller
         }
         DB::table('media_files')->insert(array_reverse($file_data));
         $media = Media::with('files')->find($media->id);
-        $media->files->makeHidden('media_id');
+        $media->files()->makeHidden('media_id');
         return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 200);
     }
 
