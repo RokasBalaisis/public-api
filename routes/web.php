@@ -58,8 +58,11 @@ $router->get('/', function () use ($router) {
             $router->get('/', ['uses' => 'MediaController@index'], function (){});
             $router->get('/{id}', ['uses' => 'MediaController@show'], function (){});
             $router->post('/', ['uses' => 'MediaController@store'], function (){});
-            $router->put('/{id}', ['uses' => 'MediaController@update'], function (){});
+            $router->group(['middleware' => 'handlePutForm'], function () use ($router) {
+                $router->put('/{id}', ['uses' => 'MediaController@update'], function (){});
+            });
             $router->delete('/{id}', ['uses' => 'MediaController@destroy'], function (){});
+                
        // });
 
         
