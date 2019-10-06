@@ -48,7 +48,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
         if(!DB::table('roles')->where('id', '=', $request->role_id)->exists()){
-            return response()->json(['message' => 'Selected role does not exist!'], 422);
+            return response()->json(['role_id' => ['Selected role does not exist!']], 422);
         }
         try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
