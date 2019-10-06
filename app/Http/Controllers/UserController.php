@@ -103,7 +103,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if(!DB::table('roles')->where('id', '=', $request->role_id)->exists()){
+        if(!DB::table('roles')->where('id', '=', $request->role_id)->exists() && $request->has('role_id')){
             return response()->json(['role_id' => ['Selected role does not exist!']], 422);
         }
         try {
