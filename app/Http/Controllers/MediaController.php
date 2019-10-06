@@ -59,7 +59,7 @@ class MediaController extends Controller
         $counter = 0;
         foreach($request->image as $image)
         {
-            array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => Carbon::now()->format('yyyy-MM-dd HH:mm:ss.SSS'), 'updated_at' => Carbon::now()->format('yyyy-MM-dd HH:mm:ss.SSS')]);
+            array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => Carbon::now()->format('Y-m-d H:i:s.S'), 'updated_at' => Carbon::now()->format('Y-m-d H:i:s.S')]);
             $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
             $counter++;
         }
