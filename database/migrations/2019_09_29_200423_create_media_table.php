@@ -19,6 +19,7 @@ class CreateMediaTable extends Migration
             $table->text('short_description');
             $table->text('description');
             $table->string('trailer_url');
+            $table->double('imdb_rating', 4, 2)->nullable();
             $table->timestamps();
         });
     }

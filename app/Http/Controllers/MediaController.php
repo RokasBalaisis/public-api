@@ -62,6 +62,7 @@ class MediaController extends Controller
             'trailer_url' => ['required', 'regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
             'image' => ['required', 'array', 'min:3', 'max:3'],
             'image.*' => ['required','file','mimes:jpg,jpeg,png,bmp'],
+            'imdb_rating' => ['numeric', 'between:0,10'],
         ]);
         
         if ($validator->fails()) {
@@ -73,6 +74,8 @@ class MediaController extends Controller
         $media->short_description = $request->short_description;
         $media->description = $request->description;
         $media->trailer_url = $request->trailer_url;
+        if($request->imdb_rating != null)
+            $media->imdb_rating = $request->imdb_rating;
         $media->save();
 
         $file_data = array();
@@ -133,6 +136,7 @@ class MediaController extends Controller
             'trailer_url' => ['regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
             'image' => ['array', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
+            'imdb_rating' => ['numeric', 'between:0,10'],
         ]);
         
         if ($validator->fails()) {
@@ -149,6 +153,8 @@ class MediaController extends Controller
                 $media->description = $request->description;
             if($request->trailer_url != null)
                 $media->trailer_url = app('hash')->make($request->trailer_url);
+            if($request->imdb_rating != null)
+                $media->imdb_rating = $request->imdb_rating;
             if($request->image != null)
             {
                 $file_data = array();
