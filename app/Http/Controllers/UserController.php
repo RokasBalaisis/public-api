@@ -115,7 +115,7 @@ class UserController extends Controller
             if($request->password != null)
                 $user->password = app('hash')->make($request->password);
             if($request->role_id != null)
-                $user->role()->sync([$request->role_id], false);
+                $user->role()->sync([$request->role_id]);
             $user->save();
             $user = User::with('role')->find($id);
             //return successful response
@@ -142,6 +142,7 @@ class UserController extends Controller
         if(User::find($id) === null)
             return response()->json(['message' => 'User with specified id does not exist'], 404);
         $user = User::find($id);
+        DB::table('user_role')->where('user_id', $id)->delete();
         $user->delete();
         return response()->json(['message' => 'User has been successfuly deleted'], 200);
     }
