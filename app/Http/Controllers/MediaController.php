@@ -22,7 +22,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::with('files')->all();
+        $media = Media::with('files')->get();
         return response()->json(['media' => $media], 200);
     }
 
