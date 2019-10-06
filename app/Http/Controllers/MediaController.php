@@ -128,7 +128,7 @@ class MediaController extends Controller
         {
             Storage::delete('/media'.'/'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
         }
-        if(count(glob(Storage::allFiles('/media'.'/'.$entry->media_id.'/'.$entry->folder),GLOB_NOSORT)) === 0)
+        if(count(glob('/media'.'/'.$entry->media_id.'/'.$entry->folder, GLOB_NOSORT)) === 0)
             File::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
         return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
