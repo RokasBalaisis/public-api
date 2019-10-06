@@ -22,7 +22,9 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::with('files:[id,folder,name,created_at,updated_at]')->get();
+        $media = Media::with(array('files'=>function($query){
+            $query->select('id','folder','name','created_at','updated_at');
+        }))->get();
         return response()->json(['media' => $media], 200);
     }
 
