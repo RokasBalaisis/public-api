@@ -102,7 +102,7 @@ class MediaController extends Controller
             'short_description' => [],
             'description' => [],
             'trailer_url' => ['regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
-            'image' => ['array', 'min:3', 'max:3'],
+            'image' => ['array', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
         ]);
         
