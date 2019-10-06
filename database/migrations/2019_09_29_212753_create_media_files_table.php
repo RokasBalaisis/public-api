@@ -18,7 +18,7 @@ class CreateMediaFilesTable extends Migration
             $table->unsignedBigInteger('media_id');
             $table->string('folder');
             $table->string('name');
-            $table->timestamps(3);
+            $table->timestamps(6);
 
             $table->foreign('media_id')->references('id')->on('media')->onDelete('cascade');
         });
