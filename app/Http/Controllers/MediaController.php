@@ -161,7 +161,7 @@ class MediaController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-      // try {
+       try {
             $media = Media::with('files')->find($id);
             if($request->name != null)
                 $media->name = $request->name;
@@ -214,7 +214,7 @@ class MediaController extends Controller
                 }
             }
     
-            DB::table('media_actors')->wherIn('id', $remove_actor_ids)->delete();
+            DB::table('media_actors')->whereIn('id', $remove_actor_ids)->delete();
                 
             $media->save();
             $media = Media::with('files', 'actors')->find($id);
@@ -225,10 +225,10 @@ class MediaController extends Controller
             //return successful response
             return response()->json(['message' => 'Media information has been successfuly updated', 'media' => $media], 200);
 
-        //} catch (\Exception $e) {
+        } catch (\Exception $e) {
             //return error message
-       //    return response()->json(['message' => 'Media edit failed!'], 409);
-      // }
+           return response()->json(['message' => 'Media edit failed!'], 409);
+       }
     }
 
     /**
