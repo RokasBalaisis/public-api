@@ -14,6 +14,6 @@ class ActorsTableSeeder extends Seeder
     public function run(Faker $faker)
     {
         for($i = 0; $i < 100; $i++)
-            Role::create(['name' => $faker->unique()->firstName(), 'surname' => $faker->unique()->lastName(), 'born' => $faker->unique()->dateTime(), 'info' => $faker->unique()->paragraph(5, true)]);
+            Actor::create(['name' => $faker->unique()->firstName(), 'surname' => $faker->unique()->lastName(), 'born' => $faker->unique()->dateTime(), 'info' => $faker->unique()->paragraph(5, true)]);
     }
 }
