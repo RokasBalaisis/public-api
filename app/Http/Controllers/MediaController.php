@@ -151,6 +151,8 @@ class MediaController extends Controller
             'image' => ['array', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
+            'actor_id' => ['array'],
+            'actor_id.*' => ['exists:actors,id'],
         ]);
         
         if ($validator->fails()) {
@@ -185,6 +187,19 @@ class MediaController extends Controller
                 DB::table('media_files')->whereIn('id', $ids_to_delete)->delete();
                 $media->files()->saveMany($file_data);
             }
+
+            $actor_data = array();
+
+            if($request->actor_id != null)
+            {
+                foreach($request->actor_id as $actor_id)
+                {
+                    if(DB::table('media_actors')->where('media_id', $media->id)->where('actor_id', $actor_id)->count() == 0)
+                        array_push($actor_data, ['media_id' => $media->id, 'actor_id' => $actor_id]);
+                }
+            }
+    
+            DB::table('media_actors')->insert($actor_data);
                 
             $media->save();
             $media = Media::with('files')->find($id);
