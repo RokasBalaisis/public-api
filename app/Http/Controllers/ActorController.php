@@ -89,8 +89,14 @@ class ActorController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
-        $actor->name = $request->name;
+        if($request->name != null)
+            $actor->name = $request->name;
+        if($request->surname != null)
+            $actor->surname = $request->surname;
+        if($request->born != null)
+            $actor->born = $request->born;
+        if($request->info != null)
+            $actor->info = $request->info;
         $actor->save();
         return response()->json(['message' => 'Actor has been successfuly updated', 'actor' => $actor], 200);
     }
