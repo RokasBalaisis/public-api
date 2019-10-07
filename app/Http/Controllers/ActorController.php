@@ -76,20 +76,23 @@ class ActorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
+        if(Actor::find($id) === null)
+            return response()->json(['message' => 'Actor with specified id does not exist'], 404);
+        $actor = Actor::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['min:3', 'alpha'],
+            'surname' => ['min:3', 'alpha'],
+            'born' => ['date'],
+            'info' => [],
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly updated', 'role' => $role], 200);
+        $actor->name = $request->name;
+        $actor->save();
+        return response()->json(['message' => 'Actor has been successfuly updated', 'actor' => $actor], 200);
     }
 
     /**
