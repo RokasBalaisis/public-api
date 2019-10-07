@@ -202,7 +202,7 @@ class MediaController extends Controller
             DB::table('media_actors')->insert($actor_data);
                 
             $media->save();
-            $media = Media::with('files')->find($id);
+            $media = Media::with('files', 'actors')->find($id);
             $media->files->transform(function ($item) {
                 unset($item->media_id);
                 return $item;
