@@ -32,4 +32,9 @@ class Media extends Model
     {
         return $this->hasMany('App\MediaFile', 'media_id');
     }
+
+    public function actors()
+    {
+        return $this->belongsToMany('App\Actor', 'media_actors');
+    }
 }

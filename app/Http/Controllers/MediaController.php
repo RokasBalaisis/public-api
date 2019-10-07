@@ -103,7 +103,7 @@ class MediaController extends Controller
             $counter++;
         }
         DB::table('media_files')->insert(array_reverse($file_data));
-        $media = Media::with('files')->find($media->id);
+        $media = Media::with('files', 'actors')->find($media->id);
         $media->files->transform(function ($item) {
             unset($item->media_id);
             return $item;
