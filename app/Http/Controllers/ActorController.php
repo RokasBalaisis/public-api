@@ -33,17 +33,23 @@ class ActorController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['required', 'min:3', 'alpha'],
+            'surname' => ['required', 'min:3', 'alpha'],
+            'born' => ['required', 'date'],
+            'info' => ['required'],
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $role = new Role;
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
+        $actor = new Actor;
+        $actor->name = $request->name;
+        $actor->surname = $request->surname;
+        $actor->born = $request->born;
+        $actor->info = $request->info;
+        $actor->save();
+        return response()->json(['message' => 'Actor has been successfuly created', 'actor' => $actor], 200);
     }
 
     /**

@@ -63,6 +63,8 @@ class MediaController extends Controller
             'image' => ['required', 'array', 'min:3', 'max:3'],
             'image.*' => ['required','file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
+            'actor_id' => ['array'],
+            'actor_id.*' => ['exists:actors,id'],
         ]);
         
         if ($validator->fails()) {
@@ -77,6 +79,18 @@ class MediaController extends Controller
         if($request->imdb_rating != null)
             $media->imdb_rating = $request->imdb_rating;
         $media->save();
+
+        $actor_data = array();
+
+        if($request->actor_id != null)
+        {
+            foreach($request->actor_id as $actor_id)
+            {
+                array_push($actor_data, ['media_id' => $media->id, 'actor_id' => $actor_id]);
+            }
+        }
+
+        DB::table('media_actors')->insert($actor_data);
 
         $file_data = array();
 
