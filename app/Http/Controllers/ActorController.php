@@ -60,10 +60,10 @@ class ActorController extends Controller
      */
     public function show($id)
     {
-        if(Role::find($id) === null)
-        return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
-        return response()->json(['role' => $role], 200);
+        if(Actor::find($id) === null)
+        return response()->json(['message' => 'Actor with specified id does not exist'], 404);
+        $actor = Actor::find($id);
+        return response()->json(['actor' => $actor], 200);
     }
 
 
