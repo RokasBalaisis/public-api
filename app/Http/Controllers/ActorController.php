@@ -109,12 +109,12 @@ class ActorController extends Controller
      */
     public function destroy($id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        if(DB::table('user_role')->where('role_id', $id)->count() > 0)
-            return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
-        $role = Role::find($id);
-        $role->delete();
-        return response()->json(['message' => 'Role has been successfuly deleted'], 200);
+        if(Actor::find($id) === null)
+            return response()->json(['message' => 'Actor with specified id does not exist'], 404);
+        if(DB::table('media_actors')->where('actor_id', $id)->count() > 0)
+            return response()->json(['message' => 'Cannot delete actor with existing media owning it'], 422);
+        $actor = Actor::find($id);
+        $actor->delete();
+        return response()->json(['message' => 'Actor has been successfuly deleted'], 200);
     }
 }
