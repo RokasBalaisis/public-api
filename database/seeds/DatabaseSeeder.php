@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call('RolesTableSeeder');
         $this->call('UserRoleTableSeeder');
         $this->call('MediaTableSeeder');
+        $this->call('ActorsTableSeeder');
     }
 }
