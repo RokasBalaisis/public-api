@@ -153,6 +153,8 @@ class MediaController extends Controller
             'imdb_rating' => ['numeric', 'between:0,10'],
             'actor_id' => ['array'],
             'actor_id.*' => ['exists:actors,id'],
+            'remove_actor_id' => ['array'],
+            'remove_actor_id.*' => ['exists:actors,id'],
         ]);
         
         if ($validator->fails()) {
@@ -200,6 +202,19 @@ class MediaController extends Controller
             }
     
             DB::table('media_actors')->insert($actor_data);
+
+            $remove_actor_data = array();
+
+            if($request->remove_actor_id != null)
+            {
+                foreach($request->remove_actor_id as $remove_actor_id)
+                {
+                    if(DB::table('media_actors')->where('media_id', $media->id)->where('actor_id', $remove_actor_id)->count() > 0)
+                        array_push($remove_actor_data, ['media_id' => $media->id, 'actor_id' => $remove_actor_id]);
+                }
+            }
+    
+            DB::table('media_actors')->delete($remove_actor_data);
                 
             $media->save();
             $media = Media::with('files', 'actors')->find($id);
