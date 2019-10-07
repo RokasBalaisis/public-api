@@ -210,7 +210,7 @@ class MediaController extends Controller
                 foreach($request->remove_actor_id as $remove_actor_id)
                 {
                     if(DB::table('media_actors')->where('media_id', $media->id)->where('actor_id', $remove_actor_id)->count() > 0)
-                        array_push($remove_actor_ids, DB::table('media_actors')->where('media_id', $media->id)->where('actor_id', $remove_actor_id)->get('id'));
+                        array_push($remove_actor_ids, DB::table('media_actors')->where('media_id', $media->id)->where('actor_id', $remove_actor_id)->pluck('id'));
                 }
             }
     
