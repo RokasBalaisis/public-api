@@ -170,7 +170,7 @@ class MediaController extends Controller
             if($request->description != null)    
                 $media->description = $request->description;
             if($request->trailer_url != null)
-                $media->trailer_url = app('hash')->make($request->trailer_url);
+                $media->trailer_url = $request->trailer_url;
             if($request->imdb_rating != null)
                 $media->imdb_rating = $request->imdb_rating;
             if($request->image != null)
