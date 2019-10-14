@@ -98,7 +98,7 @@ $router->get('/', function () use ($router) {
         
     });
 
-    $router->group(['prefix' => 'mtypes'], function () use ($router) {
+    $router->group(['prefix' => 'mediatypes'], function () use ($router) {
 
         // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
             $router->get('/', ['uses' => 'MediaTypeController@index'], function (){});
