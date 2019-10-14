@@ -20,7 +20,7 @@ class MediaTypeController extends Controller
      */
     public function index()
     {
-        $media_types = MediaType::all();
+        $media_types = MediaType::with('categories')->get();
         return response()->json(['media_types' => $media_types], 200);
     }
 

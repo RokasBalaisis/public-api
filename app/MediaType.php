@@ -4,6 +4,7 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\Model;
+use App\Category;
 
 class MediaType extends Model
 {
@@ -22,5 +23,9 @@ class MediaType extends Model
     protected $hidden = ['pivot'];
 
 
+    public function categories()
+    {
+    return $this->hasMany(Category::class);
+    }
 
 }
