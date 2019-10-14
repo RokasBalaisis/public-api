@@ -17,19 +17,19 @@ class CategoriesTableSeeder extends Seeder
         $types = MediaType::all();
         foreach($types as $type)
         {
-            Category::create(['media_type' => $type->name, 'name' => 'action']);
-            Category::create(['media_type' => $type->name, 'name' => 'adventure']);
-            Category::create(['media_type' => $type->name, 'name' => 'animation']);
-            Category::create(['media_type' => $type->name, 'name' => 'comedy']);
-            Category::create(['media_type' => $type->name, 'name' => 'crime']);
-            Category::create(['media_type' => $type->name, 'name' => 'drama']);
-            Category::create(['media_type' => $type->name, 'name' => 'fantasy']);
-            Category::create(['media_type' => $type->name, 'name' => 'historical']);
-            Category::create(['media_type' => $type->name, 'name' => 'horror']);
-            Category::create(['media_type' => $type->name, 'name' => 'mystery']);
-            Category::create(['media_type' => $type->name, 'name' => 'musical']);
-            Category::create(['media_type' => $type->name, 'name' => 'sci-fi']);
-            Category::create(['media_type' => $type->name, 'name' => 'thriller']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'action']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'adventure']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'animation']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'comedy']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'crime']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'drama']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'fantasy']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'historical']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'horror']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'mystery']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'musical']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'sci-fi']);
+            Category::create(['media_type_id' => $type->id, 'name' => 'thriller']);
         }
     }
 }
