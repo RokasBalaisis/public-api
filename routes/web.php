@@ -97,5 +97,20 @@ $router->get('/', function () use ($router) {
 
         
     });
+
+    $router->group(['prefix' => 'mtypes'], function () use ($router) {
+
+        // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+            $router->get('/', ['uses' => 'MediaTypeController@index'], function (){});
+            $router->get('/{id}', ['uses' => 'MediaTypeController@show'], function (){});
+            $router->post('/', ['uses' => 'MediaTypeController@store'], function (){});
+            $router->put('/{id}', ['uses' => 'MediaTypeController@update'], function (){});
+            $router->delete('/{id}', ['uses' => 'MediaTypeController@destroy'], function (){});
+        // });
+
+        
+
+        
+    });
     
     
