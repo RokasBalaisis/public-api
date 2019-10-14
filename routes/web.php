@@ -83,19 +83,19 @@ $router->get('/', function () use ($router) {
         
     });
 
-    // $router->group(['prefix' => 'category'], function () use ($router) {
+    $router->group(['prefix' => 'category'], function () use ($router) {
 
-    //     $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
-    //         $router->get('/', ['uses' => 'MediaController@index'], function (){});
-    //         $router->get('/{id}', ['uses' => 'MediaController@show'], function (){});
-    //         $router->post('/', ['uses' => 'MediaController@store'], function (){});
-    //         $router->put('/{id}', ['uses' => 'MediaController@update'], function (){});
-    //         $router->delete('/{id}', ['uses' => 'MediaController@destroy'], function (){});
-    //     });
-
-        
+        // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+            $router->get('/', ['uses' => 'CategoryController@index'], function (){});
+            $router->get('/{id}', ['uses' => 'CategoryController@show'], function (){});
+            $router->post('/', ['uses' => 'CategoryController@store'], function (){});
+            $router->put('/{id}', ['uses' => 'CategoryController@update'], function (){});
+            $router->delete('/{id}', ['uses' => 'CategoryController@destroy'], function (){});
+        // });
 
         
-    // });
+
+        
+    });
     
     
