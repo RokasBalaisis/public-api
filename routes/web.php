@@ -68,7 +68,7 @@ $router->get('/', function () use ($router) {
         
     });
 
-    $router->group(['prefix' => 'actor'], function () use ($router) {
+    $router->group(['prefix' => 'actors'], function () use ($router) {
 
         // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
             $router->get('/', ['uses' => 'ActorController@index'], function (){});
@@ -83,7 +83,7 @@ $router->get('/', function () use ($router) {
         
     });
 
-    $router->group(['prefix' => 'category'], function () use ($router) {
+    $router->group(['prefix' => 'categories'], function () use ($router) {
 
         // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
             $router->get('/', ['uses' => 'CategoryController@index'], function (){});
