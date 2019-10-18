@@ -55,10 +55,10 @@ class MediaTypeController extends Controller
      */
     public function show($id)
     {
-        if(Category::find($id) === null)
-        return response()->json(['message' => 'Category with specified id does not exist'], 404);
-        $category = Category::find($id);
-        return response()->json(['category' => $category], 200);
+        if(MediaType::find($id) === null)
+        return response()->json(['message' => 'Media type with specified id does not exist'], 404);
+        $media_type = MediaType::find($id);
+        return response()->json(['media_type' => $media_type], 200);
     }
 
 
