@@ -41,10 +41,10 @@ class MediaTypeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $media_type = new Role;
+        $media_type = new MediaType();
         $media_type->name = $request->name;
         $media_type->save();
-        return response()->json(['message' => 'Media type has been successfuly created', 'role' => $media_type], 200);
+        return response()->json(['message' => 'Media type has been successfuly created', 'media_type' => $media_type], 200);
     }
 
     /**
