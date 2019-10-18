@@ -5,6 +5,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Category;
+use App\Media;
 
 class MediaType extends Model
 {
@@ -25,7 +26,12 @@ class MediaType extends Model
 
     public function categories()
     {
-    return $this->hasMany(Category::class);
+        return $this->hasMany(Category::class);
+    }
+
+    public function media()
+    {
+        return $this->hasManyThrough(Media::class, Category::class);
     }
 
 }

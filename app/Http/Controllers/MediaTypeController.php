@@ -20,7 +20,7 @@ class MediaTypeController extends Controller
      */
     public function index()
     {
-        $media_types = MediaType::with('categories')->get();
+        $media_types = MediaType::with('media')->get();
         return response()->json(['media_types' => $media_types], 200);
     }
 
@@ -41,10 +41,10 @@ class MediaTypeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $role = new Role;
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
+        $media_type = new Role;
+        $media_type->name = $request->name;
+        $media_type->save();
+        return response()->json(['message' => 'Media type has been successfuly created', 'role' => $media_type], 200);
     }
 
     /**
