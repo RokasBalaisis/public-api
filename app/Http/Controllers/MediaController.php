@@ -246,14 +246,17 @@ class MediaController extends Controller
         DB::table('media_files')->where('media_id', $id)->delete();
         DB::table('media_actors')->where('media_id', $id)->delete();
         $role->delete();
-        foreach($entries as $entry)
+        if($entries->count() > 0)
         {
-            Storage::delete('/media'.'/'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
+            foreach($entries as $entry)
+            {
+                Storage::delete('/media'.'/'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
+            }
+            if(count(glob('/media'.'/'.$entry->media_id.'/'.$entry->folder, GLOB_NOSORT)) === 0)
+                Storage::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
+            if(count(glob('/media'.'/'.$entry->media_id, GLOB_NOSORT)) === 0)
+                Storage::deleteDirectory('/media'.'/'.$entry->media_id);
         }
-        if(count(glob('/media'.'/'.$entry->media_id.'/'.$entry->folder, GLOB_NOSORT)) === 0)
-            Storage::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
-        if(count(glob('/media'.'/'.$entry->media_id, GLOB_NOSORT)) === 0)
-            Storage::deleteDirectory('/media'.'/'.$entry->media_id);
         return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
 }
