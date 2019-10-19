@@ -18,6 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call('MediaTableSeeder');
         $this->call('ActorsTableSeeder');
         $this->call('CategoriesTableSeeder');
-        $this-call('MediaActorsTableSeeder');
+        $this->call('MediaActorsTableSeeder');
     }
 }
