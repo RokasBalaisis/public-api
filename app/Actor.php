@@ -19,7 +19,9 @@ class Actor extends Model
         'name','surname','born','info',
     ];
 
-    protected $hidden = [];
+    protected $hidden = [
+        'pivot',
+    ];
 
 
 

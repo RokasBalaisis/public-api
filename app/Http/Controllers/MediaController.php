@@ -121,7 +121,7 @@ class MediaController extends Controller
     {
         if(Media::find($id) === null)
             return response()->json(['message' => 'Media with specified id does not exist'], 404);
-        $media = Media::with('files')->find($id);
+        $media = Media::with('files', 'actors')->find($id);
         $media->files->transform(function ($item) {
             unset($item->media_id);
     
@@ -162,7 +162,7 @@ class MediaController extends Controller
         }
 
        try {
-            $media = Media::with('files')->find($id);
+            $media = Media::with('files', 'actors')->find($id);
             if($request->name != null)
                 $media->name = $request->name;
             if($request->short_description != null)    
@@ -244,6 +244,7 @@ class MediaController extends Controller
         $role = Media::find($id);
         $entries = DB::table('media_files')->where('media_id', $id)->get()->toArray();
         DB::table('media_files')->where('media_id', $id)->delete();
+        DB::table('media_actors')->where('media_id', $id)->delete();
         $role->delete();
         foreach($entries as $entry)
         {
