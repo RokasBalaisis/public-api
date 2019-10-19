@@ -71,9 +71,9 @@ class MediaTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
+        if(MediaType::find($id) === null)
+            return response()->json(['message' => 'Media type with specified id does not exist'], 404);
+        $media_type = MediaType::find($id);
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
         ]);
@@ -82,9 +82,9 @@ class MediaTypeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly updated', 'role' => $role], 200);
+        $media_type->name = $request->name;
+        $media_type->save();
+        return response()->json(['message' => 'Media type has been successfuly updated', 'media_type' => $media_type], 200);
     }
 
     /**
@@ -95,11 +95,11 @@ class MediaTypeController extends Controller
      */
     public function destroy($id)
     {
-        if(Role::find($id) === null)
+        if(MediaType::find($id) === null)
             return response()->json(['message' => 'Role with specified id does not exist'], 404);
         if(DB::table('user_role')->where('role_id', $id)->count() > 0)
             return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
-        $role = Role::find($id);
+        $role = MediaType::find($id);
         $role->delete();
         return response()->json(['message' => 'Role has been successfuly deleted'], 200);
     }
