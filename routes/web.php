@@ -112,5 +112,20 @@ $router->get('/', function () use ($router) {
 
         
     });
+
+    $router->group(['prefix' => 'comments'], function () use ($router) {
+
+        // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+            $router->get('/', ['uses' => 'CommentController@index'], function (){});
+            $router->get('/{id}', ['uses' => 'CommentController@show'], function (){});
+            $router->post('/', ['uses' => 'CommentController@store'], function (){});
+            $router->put('/{id}', ['uses' => 'CommentController@update'], function (){});
+            $router->delete('/{id}', ['uses' => 'CommentController@destroy'], function (){});
+        // });
+
+        
+
+        
+    });
     
     
