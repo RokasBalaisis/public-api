@@ -246,7 +246,7 @@ class MediaController extends Controller
         DB::table('media_files')->where('media_id', $id)->delete();
         DB::table('media_actors')->where('media_id', $id)->delete();
         $role->delete();
-        if($entries->count() > 0)
+        if(DB::table('media_files')->where('media_id', $id)->count() > 0)
         {
             foreach($entries as $entry)
             {
