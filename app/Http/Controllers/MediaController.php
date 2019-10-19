@@ -22,7 +22,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::with('files')->get();
+        $media = Media::with('files', 'actors')->get();
         if($media->count() > 1)
         {
             $media->transform(function ($entry) {
@@ -35,7 +35,7 @@ class MediaController extends Controller
             });
         }
         else if($media->count() == 1){
-            $media = Media::with('files')->first();
+            $media = Media::with('files', 'actors')->first();
             $media->files->transform(function ($item) {
                 unset($item->media_id);
         

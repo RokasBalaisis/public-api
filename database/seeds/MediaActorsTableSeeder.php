@@ -17,14 +17,13 @@ class MediaActorsTableSeeder extends Seeder
     public function run(Faker $faker)
     {
         $media = Media::all();
-        $actors = Actor::all();
+        $actor_ids = Actor::all()->pluck('id');
         $data = array();
         foreach($media as $entry)
         {
             for($i = 0; $i < rand(1,5); $i++)
-                array_push($data, (['media_id' => $entry->id, 'actor_id' => $faker->unique()->randomElement($actors)]));
+                array_push($data, (['media_id' => $entry->id, 'actor_id' => $faker->randomElement($actor_ids)]));
         }
-        MediaType::create(['name' => 'movies']);
-        MediaType::create(['name' => 'series']);
+        DB::table('media_actors')->insert($data);
     }
 }
