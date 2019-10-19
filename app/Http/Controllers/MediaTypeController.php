@@ -96,11 +96,11 @@ class MediaTypeController extends Controller
     public function destroy($id)
     {
         if(MediaType::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        if(DB::table('user_role')->where('role_id', $id)->count() > 0)
-            return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
-        $role = MediaType::find($id);
-        $role->delete();
-        return response()->json(['message' => 'Role has been successfuly deleted'], 200);
+            return response()->json(['message' => 'Media type with specified id does not exist'], 404);
+        if(DB::table('media')->where('media_type_id', $id)->count() > 0)
+            return response()->json(['message' => 'Cannot delete media type with existing media owning it'], 422);
+        $media_type = MediaType::find($id);
+        $media_type->delete();
+        return response()->json(['message' => 'Media type has been successfuly deleted'], 200);
     }
 }
