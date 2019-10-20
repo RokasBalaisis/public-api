@@ -33,21 +33,21 @@ class RatingController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'media_id' => ['required', 'exists:media,id', 'numeric'],
-            'user_id' => ['required', 'exists:users,id', 'numeric'],
-            'text' => ['required']
+            'media_id' => ['required', 'exists:media,id', 'integer'],
+            'user_id' => ['required', 'exists:users,id', 'integer'],
+            'rating' => ['required', 'integer', 'between:1,5']
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $comment = new Comment;
-        $comment->media_id = $request->media_id;
-        $comment->user_id = $request->user_id;
-        $comment->text = $request->text;
-        $comment->save();
-        return response()->json(['message' => 'Comment has been successfuly created', 'comment' => $comment], 200);
+        $rating = new Rating;
+        $rating->media_id = $request->media_id;
+        $rating->user_id = $request->user_id;
+        $rating->rating = $request->rating;
+        $rating->save();
+        return response()->json(['message' => 'Rating has been successfuly created', 'rating' => $rating], 200);
     }
 
     /**
@@ -58,10 +58,10 @@ class RatingController extends Controller
      */
     public function show($id)
     {
-        if(Comment::find($id) === null)
-        return response()->json(['message' => 'Comment with specified id does not exist'], 404);
-        $comment = Comment::find($id);
-        return response()->json(['comment' => $comment], 200);
+        if(Rating::find($id) === null)
+        return response()->json(['message' => 'Rating with specified id does not exist'], 404);
+        $rating = Rating::find($id);
+        return response()->json(['rating' => $rating], 200);
     }
 
 
