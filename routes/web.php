@@ -127,5 +127,20 @@ $router->get('/', function () use ($router) {
 
         
     });
+
+    $router->group(['prefix' => 'ratings'], function () use ($router) {
+
+        // $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+            $router->get('/', ['uses' => 'RatingController@index'], function (){});
+            $router->get('/{id}', ['uses' => 'RatingController@show'], function (){});
+            $router->post('/', ['uses' => 'RatingController@store'], function (){});
+            $router->put('/{id}', ['uses' => 'RatingController@update'], function (){});
+            $router->delete('/{id}', ['uses' => 'RatingController@destroy'], function (){});
+        // });
+
+        
+
+        
+    });
     
     
