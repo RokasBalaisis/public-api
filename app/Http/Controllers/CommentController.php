@@ -74,20 +74,26 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
+        if(Comment::find($id) === null)
+            return response()->json(['message' => 'Comment with specified id does not exist'], 404);
+        $comment = Comment::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'media_id' => ['exists:media,id', 'numeric'],
+            'user_id' => ['exists:users,id', 'numeric'],
+            'text' => []
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly updated', 'role' => $role], 200);
+        if($request->media_id != null)
+            $comment->media_id = $request->media_id;
+        if($request->user_id != null)
+            $comment->user_id = $request->user_id;
+        if($request->text != null)
+            $comment->text = $request->text;
+        $comment->save();
+        return response()->json(['message' => 'Comment has been successfuly updated', 'comment' => $comment], 200);
     }
 
     /**
@@ -98,12 +104,10 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        if(DB::table('user_role')->where('role_id', $id)->count() > 0)
-            return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
-        $role = Role::find($id);
-        $role->delete();
-        return response()->json(['message' => 'Role has been successfuly deleted'], 200);
+        if(Comment::find($id) === null)
+            return response()->json(['message' => 'Comment with specified id does not exist'], 404);
+        $comment = Comment::find($id);
+        $comment->delete();
+        return response()->json(['message' => 'Comment has been successfuly deleted'], 200);
     }
 }
