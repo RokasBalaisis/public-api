@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use Faker\Generator as Faker;
-use App\Actor;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ActorsTableSeeder extends Seeder
 {
@@ -13,7 +14,13 @@ class ActorsTableSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
-        for($i = 0; $i < 100; $i++)
-            Actor::create(['name' => $faker->unique()->firstName(), 'surname' => $faker->unique()->lastName(), 'born' => $faker->unique()->dateTime(), 'info' => $faker->unique()->paragraph(5, true)]);
+        $data = array();
+        $amount = 100;
+        for($i=0; $i < $amount; $i++)
+        {
+            $current_timestamp = Carbon::now();
+            array_push($data, (['name' => $faker->unique()->firstName(), 'surname' => $faker->unique()->lastName(), 'born' => $faker->unique()->dateTime(), 'info' => $faker->unique()->paragraph(5, true), 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+        }
+        DB::table('actors')->insert($data);
     }
 }

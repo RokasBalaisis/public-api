@@ -3,8 +3,6 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Generator as Faker;
-use App\Role;
-use App\User;
 
 class UserRoleTableSeeder extends Seeder
 {
@@ -18,15 +16,17 @@ class UserRoleTableSeeder extends Seeder
         $adminIsSet = false;
         $users = DB::table('users')->get();
         $rolesIds = DB::table('roles')->pluck('id')->toArray();
+        $data = array();
         foreach($users as $user)
         {
             if($adminIsSet == false)
             {
-                DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $rolesIds[0]]);
+                array_push($data, (['user_id' => $user->id, 'role_id' => $rolesIds[0]]));
                 $adminIsSet = true;
             }
             else
-                DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => $faker->randomElement($rolesIds)]);
+               array_push($data, (['user_id' => $user->id, 'role_id' => $faker->randomElement($rolesIds)]));
         }
+        DB::table('user_role')->insert($data);
     }
 }

@@ -1,9 +1,8 @@
 <?php
 
-use App\Media;
 use Illuminate\Database\Seeder;
 use App\MediaType;
-use App\Category;
+use Carbon\Carbon;
 
 class CategoriesTableSeeder extends Seeder
 {
@@ -15,21 +14,24 @@ class CategoriesTableSeeder extends Seeder
     public function run()
     {
         $types = MediaType::all();
+        $data = array();
         foreach($types as $type)
         {
-            Category::create(['media_type_id' => $type->id, 'name' => 'action']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'adventure']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'animation']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'comedy']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'crime']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'drama']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'fantasy']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'historical']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'horror']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'mystery']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'musical']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'sci-fi']);
-            Category::create(['media_type_id' => $type->id, 'name' => 'thriller']);
+            $current_timestamp = Carbon::now();
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'action', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'adventure', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'animation', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'comedy', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'crime', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'drama', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'fantasy', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'historical', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'horror', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'mystery', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'musical', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'sci-fi', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
+            array_push($data, (['media_type_id' => $type->id, 'name' => 'thriller', 'created_at' => $current_timestamp, 'updated_at' => $current_timestamp]));
         }
+        DB::table('categories')->insert($data);
     }
 }
