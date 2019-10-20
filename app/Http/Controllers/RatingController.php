@@ -74,26 +74,26 @@ class RatingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Comment::find($id) === null)
-            return response()->json(['message' => 'Comment with specified id does not exist'], 404);
-        $comment = Comment::find($id);
+        if(Rating::find($id) === null)
+            return response()->json(['message' => 'Rating with specified id does not exist'], 404);
+        $rating = Rating::find($id);
         $validator = Validator::make($request->all(), [
-            'media_id' => ['exists:media,id', 'numeric'],
-            'user_id' => ['exists:users,id', 'numeric'],
-            'text' => []
+            'media_id' => ['exists:media,id', 'integer'],
+            'user_id' => ['exists:users,id', 'integer'],
+            'rating' => ['integer', 'between:1,5']
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         if($request->media_id != null)
-            $comment->media_id = $request->media_id;
+            $rating->media_id = $request->media_id;
         if($request->user_id != null)
-            $comment->user_id = $request->user_id;
-        if($request->text != null)
-            $comment->text = $request->text;
-        $comment->save();
-        return response()->json(['message' => 'Comment has been successfuly updated', 'comment' => $comment], 200);
+            $rating->user_id = $request->user_id;
+        if($request->rating != null)
+            $rating->rating = $request->rating;
+        $rating->save();
+        return response()->json(['message' => 'Rating has been successfuly updated', 'rating' => $rating], 200);
     }
 
     /**
@@ -104,10 +104,10 @@ class RatingController extends Controller
      */
     public function destroy($id)
     {
-        if(Comment::find($id) === null)
-            return response()->json(['message' => 'Comment with specified id does not exist'], 404);
-        $comment = Comment::find($id);
-        $comment->delete();
-        return response()->json(['message' => 'Comment has been successfuly deleted'], 200);
+        if(Rating::find($id) === null)
+            return response()->json(['message' => 'Rating with specified id does not exist'], 404);
+        $rating = Rating::find($id);
+        $rating->delete();
+        return response()->json(['message' => 'Rating has been successfuly deleted'], 200);
     }
 }
