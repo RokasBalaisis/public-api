@@ -30,17 +30,27 @@ class MediaController extends Controller
                     unset($item->media_id);
             
                     return $item;
-                });    
+                });
+                $entry->ratings->transform(function ($item) {
+                    unset($item->media_id);
+            
+                    return $item;
+                });      
                 return $entry;
             });
         }
         else if($media->count() == 1){
-            $media = Media::with('files', 'actors')->first();
+            $media = Media::with('files', 'actors', 'ratings')->first();
             $media->files->transform(function ($item) {
                 unset($item->media_id);
         
                 return $item;
-            });    
+            });
+            $media->ratings->transform(function ($item) {
+                unset($item->media_id);
+        
+                return $item;
+            });      
         }
 
         return response()->json(['media' => $media], 200);
