@@ -56,6 +56,7 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'media_type_id' => ['exists:media_types,id', 'required', 'numeric'],
             'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/'],
             'short_description' => ['required'],
             'description' => ['required'],
@@ -72,6 +73,7 @@ class MediaController extends Controller
         }
 
         $media = new Media;
+        $media->media_type_id = $request->media_type_id;
         $media->name = $request->name;
         $media->short_description = $request->short_description;
         $media->description = $request->description;
@@ -144,6 +146,7 @@ class MediaController extends Controller
             return response()->json(['message' => 'Media with specified id does not exist'], 404);
 
         $validator = Validator::make($request->all(), [
+            'media_type_id' => ['exists:media_types,id', 'numeric'],
             'name' => ['min:3', 'regex:/^[A-Za-z]+$/'],
             'short_description' => [],
             'description' => [],
@@ -163,6 +166,8 @@ class MediaController extends Controller
 
        try {
             $media = Media::with('files', 'actors')->find($id);
+            if($request->media_type_id != null)
+                $media->media_type_id = $request->media_type_id;
             if($request->name != null)
                 $media->name = $request->name;
             if($request->short_description != null)    
