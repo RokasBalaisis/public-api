@@ -37,4 +37,9 @@ class Media extends Model
     {
         return $this->belongsToMany('App\Actor', 'media_actors');
     }
+
+    public function ratings()
+    {
+        return $this->belongsToMany('App\Rating', 'ratings');
+    }
 }
