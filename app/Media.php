@@ -40,6 +40,6 @@ class Media extends Model
 
     public function ratings()
     {
-        return $this->belongsToMany('App\Rating', 'ratings');
+        return $this->hasMany('App\Rating');
     }
 }
