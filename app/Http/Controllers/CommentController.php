@@ -33,17 +33,21 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'media_id' => ['required', 'exists:media,id', 'numeric'],
+            'user_id' => ['required', 'exists:users,id', 'numeric'],
+            'text' => ['required']
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $role = new Role;
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
+        $comment = new Comment;
+        $comment->media_id = $request->media_id;
+        $comment->user_id = $request->user_id;
+        $comment->text = $request->text;
+        $comment->save();
+        return response()->json(['message' => 'Comment has been successfuly created', 'comment' => $comment], 200);
     }
 
     /**
@@ -54,10 +58,10 @@ class CommentController extends Controller
      */
     public function show($id)
     {
-        if(Role::find($id) === null)
-        return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
-        return response()->json(['role' => $role], 200);
+        if(Comment::find($id) === null)
+        return response()->json(['message' => 'Comment with specified id does not exist'], 404);
+        $comment = Comment::find($id);
+        return response()->json(['comment' => $comment], 200);
     }
 
 
