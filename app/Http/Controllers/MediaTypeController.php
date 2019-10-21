@@ -34,7 +34,7 @@ class MediaTypeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/', 'unique:media_types,name']
         ]);
         
         if ($validator->fails()) {
@@ -75,7 +75,7 @@ class MediaTypeController extends Controller
             return response()->json(['message' => 'Media type with specified id does not exist'], 404);
         $media_type = MediaType::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['min:3', 'regex:/^[A-Za-z]+$/', 'unique:media_types,name']
         ]);
         
         if ($validator->fails()) {
