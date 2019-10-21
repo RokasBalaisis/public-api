@@ -41,7 +41,7 @@ class UserController extends Controller
             'username' => ['required', 'string', 'max:50', 'unique:users', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:6'],
-            'role_id' => ['required', 'exists:role,id', 'integer'],
+            'role_id' => ['required', 'exists:roles,id', 'integer'],
         ]);
         
         if ($validator->fails()) {
@@ -97,7 +97,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => ['string', 'max:50', 'unique:users,username,'. $id, 'regex:/(^([a-zA-Z]+)(\d+)?$)/u'],
             'email' => ['email', 'unique:users,email,'. $id],
-            'role_id' => ['exists:role,id', 'integer' ],
+            'role_id' => ['exists:roles,id', 'integer' ],
             'password' => ['min:6', 'alpha_dash'],
         ]);
         if ($validator->fails()) {
