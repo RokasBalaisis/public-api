@@ -15,7 +15,7 @@ class CreateMediaTable extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('media_type_id');
+            $table->unsignedBigInteger('category_id');
             $table->string('name');
             $table->text('short_description');
             $table->text('description');
@@ -23,7 +23,7 @@ class CreateMediaTable extends Migration
             $table->decimal('imdb_rating', 4, 1)->nullable();
             $table->timestamps();
 
-            $table->foreign('media_type_id')->references('id')->on('media_types')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

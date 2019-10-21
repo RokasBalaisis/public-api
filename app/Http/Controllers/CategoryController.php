@@ -33,17 +33,19 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'media_type_id' => ['required', 'exists:media,id', 'integer'],
+            'name' => ['required']
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $role = new Role;
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly created', 'role' => $role], 200);
+        $category = new Category;
+        $category->media_type_id = $request->media_type_id;
+        $category->name = $request->name;
+        $category->save();
+        return response()->json(['message' => 'Category has been successfuly created', 'category' => $category], 200);
     }
 
     /**
@@ -70,20 +72,22 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
-        $role = Role::find($id);
+        if(Category::find($id) === null)
+            return response()->json(['message' => 'Category with specified id does not exist'], 404);
+        $category = Category::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'media_type_id' => ['exists:media,id', 'integer'],
+            'name' => []
         ]);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $role->name = $request->name;
-        $role->save();
-        return response()->json(['message' => 'Role has been successfuly updated', 'role' => $role], 200);
+        $category->media_type_id = $request->media_type_id;
+        $category->name = $request->name;
+        $category->save();
+        return response()->json(['message' => 'Category has been successfuly updated', 'category' => $category], 200);
     }
 
     /**
@@ -94,8 +98,8 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        if(Role::find($id) === null)
-            return response()->json(['message' => 'Role with specified id does not exist'], 404);
+        if(Category::find($id) === null)
+            return response()->json(['message' => 'Category with specified id does not exist'], 404);
         if(DB::table('user_role')->where('role_id', $id)->count() > 0)
             return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
         $role = Role::find($id);
