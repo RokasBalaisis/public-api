@@ -66,7 +66,7 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => ['exists:categories,id', 'required', 'numeric'],
+            'category_id' => ['exists:categories,id', 'required', 'integer'],
             'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/'],
             'short_description' => ['required'],
             'description' => ['required'],
@@ -75,7 +75,7 @@ class MediaController extends Controller
             'image.*' => ['required','file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
             'actor_id' => ['array'],
-            'actor_id.*' => ['exists:actors,id'],
+            'actor_id.*' => ['exists:actors,id', 'integer'],
         ]);
         
         if ($validator->fails()) {
@@ -156,7 +156,7 @@ class MediaController extends Controller
             return response()->json(['message' => 'Media with specified id does not exist'], 404);
 
         $validator = Validator::make($request->all(), [
-            'category_id' => ['exists:categories,id', 'numeric'],
+            'category_id' => ['exists:categories,id', 'integer'],
             'name' => ['min:3', 'regex:/^[A-Za-z]+$/'],
             'short_description' => [],
             'description' => [],
@@ -165,9 +165,9 @@ class MediaController extends Controller
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
             'actor_id' => ['array'],
-            'actor_id.*' => ['exists:actors,id'],
+            'actor_id.*' => ['exists:actors,id', 'integer'],
             'remove_actor_id' => ['array'],
-            'remove_actor_id.*' => ['exists:actors,id'],
+            'remove_actor_id.*' => ['exists:actors,id', 'integer'],
         ]);
         
         if ($validator->fails()) {
