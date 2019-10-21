@@ -49,19 +49,11 @@ class Authenticate
             $currentuser = User::find($payload['sub']);
             if($payload['exp'] < Carbon::now()->timestamp)
             {
-                if(DB::table('users')->where('id', $currentuser->id)->first()->jti == $payload['jti'])
-                {
-                    DB::table('users')->where('id', $currentuser->id)->update(['status' => 0, 'jti' => null]);
-                }
                 return response(['message' => 'Token is Expired.'], 401);
             }
             
             if($currentuser == null)
             return response()->json(['message' => 'Unauthorized'], 401);
-            if(DB::table('users')->where('id', $currentuser->id)->first()->status == 0)
-            {
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
             if (! $new_token = $this->auth->guard($guard)->fromUser($currentuser)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }

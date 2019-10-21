@@ -59,28 +59,18 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only(['email', 'password']);
-        if(DB::table('users')->where('email', $request->email)->count() > 0)
-        {
-            $result = DB::table('users')->where('email', $request->email)->first();
-            if(DB::table('users')->where('id', $result->id)->first()->status == 1 && $result->exp > Carbon::now()->timestamp)
-            {
-                return response()->json(['error' => ['User is already logged in']], 409);
-            }
-        }
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['message' => ['Invalid credentials']], 422);
         }
         $payload = Auth::payload();
-        DB::table('users')->where('email', $request->email)->update(['status' => 1, 'jti' => $payload['jti'], 'exp' => $payload['exp']]);
+        DB::table('users')->where('email', $request->email)->update(['status' => 1, 'exp' => $payload['exp']]);
         return response()->json(["message" => "User successfully logged in"], 200)->header('Authorization', 'Bearer ' . $token);
     }
 
 
     public function logout(Request $request)
     {
-        DB::table('users')->where('id', Auth::user()->getAuthIdentifier())->update(['status' => 0]);
         Auth::logout();
-
         return response()->json(["message" => "Logged out"], 200);
     }
     
