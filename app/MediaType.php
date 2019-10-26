@@ -21,7 +21,7 @@ class MediaType extends Model
         'name',
     ];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'laravel_through_key'];
 
 
     public function categories()

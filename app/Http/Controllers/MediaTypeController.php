@@ -20,6 +20,17 @@ class MediaTypeController extends Controller
      */
     public function index()
     {
+        $media_types = MediaType::with('categories')->get();
+        return response()->json(['media_types' => $media_types], 200);
+    }
+
+    /**
+     * Display a listing of the resource with its media.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexMedia()
+    {
         $media_types = MediaType::with('media')->get();
         return response()->json(['media_types' => $media_types], 200);
     }
