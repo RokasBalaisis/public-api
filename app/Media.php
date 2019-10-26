@@ -25,7 +25,7 @@ class Media extends Model
      * @var array
      */
     protected $hidden = [
-        'pivot',
+        'pivot', 'laravel_through_key'
     ];
 
     public function files()
