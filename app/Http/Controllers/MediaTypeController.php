@@ -21,7 +21,7 @@ class MediaTypeController extends Controller
     public function index()
     {
         $media_types = MediaType::with('categories')->get();
-        $media_types->categories()->makeHidden('media_type_id');
+        $media_types->categories->makeHidden('media_type_id');
         return response()->json(['media_types' => $media_types], 200);
     }
 
