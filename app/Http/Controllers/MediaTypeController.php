@@ -25,8 +25,7 @@ class MediaTypeController extends Controller
         {
             $media_types->transform(function ($entry) {
                 $entry->categories->transform(function ($item) {
-                    unset($item->media_type_id);
-            
+                    unset($item->media_type_id);      
                     return $item;
                 });  
                 return $entry;
