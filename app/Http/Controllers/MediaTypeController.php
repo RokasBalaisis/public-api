@@ -139,8 +139,8 @@ class MediaTypeController extends Controller
     {
         if(MediaType::find($id) === null)
             return response()->json(['message' => 'Media type with specified id does not exist'], 404);
-        if(DB::table('media')->where('media_type_id', $id)->count() > 0)
-            return response()->json(['message' => 'Cannot delete media type with existing media owning it'], 422);
+        if(DB::table('categories')->where('media_type_id', $id)->count() > 0)
+            return response()->json(['message' => 'Cannot delete media type with existing categories owning it'], 422);
         $media_type = MediaType::find($id);
         $media_type->delete();
         return response()->json(['message' => 'Media type has been successfuly deleted'], 200);
