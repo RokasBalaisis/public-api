@@ -61,6 +61,20 @@ class MediaTypeController extends Controller
         return response()->json(['media_type' => $media_type], 200);
     }
 
+    /**
+     * Display the media of specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showMedia($id)
+    {
+        if(MediaType::find($id) === null)
+        return response()->json(['message' => 'Media type with specified id does not exist'], 404);
+        $media_type = MediaType::with('media')->find($id);
+        return response()->json(['media_type' => $media_type], 200);
+    }
+
 
     /**
      * Update the specified resource in storage.
