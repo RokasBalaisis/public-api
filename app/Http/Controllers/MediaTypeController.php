@@ -72,7 +72,7 @@ class MediaTypeController extends Controller
         $media_type = new MediaType();
         $media_type->name = $request->name;
         $media_type->save();
-        return response()->json(['message' => 'Media type has been successfuly created', 'media_type' => $media_type], 200);
+        return response()->json(['message' => 'Media type has been successfuly created', 'media_type' => $media_type], 201);
     }
 
     /**
