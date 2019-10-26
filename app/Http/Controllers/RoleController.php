@@ -32,7 +32,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/', 'unique:roles']
         ]);
         
         if ($validator->fails()) {
@@ -73,7 +73,7 @@ class RoleController extends Controller
             return response()->json(['message' => 'Role with specified id does not exist'], 404);
         $role = Role::find($id);
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/']
+            'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/', 'unique:roles']
         ]);
         
         if ($validator->fails()) {
