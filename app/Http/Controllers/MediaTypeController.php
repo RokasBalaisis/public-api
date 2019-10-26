@@ -99,7 +99,7 @@ class MediaTypeController extends Controller
     {
         if(MediaType::find($id) === null)
         return response()->json(['message' => 'Media type with specified id does not exist'], 404);
-        $media_type = MediaType::with('media.files')->find($id);
+        $media_type = MediaType::with('media.files, media.actors, media.ratings')->find($id);
         return response()->json(['media_type' => $media_type], 200);
     }
 
