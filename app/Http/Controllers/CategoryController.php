@@ -39,7 +39,7 @@ class CategoryController extends Controller
 
         if(DB::table('categories')->where('media_type_id', $request->media_type_id)->where('name', $request->name)->count() > 0)
         {
-            return response()->json(['message' => 'Category with this name and media type has been taken'], 422);
+            return response()->json(['message' => ['Category with this name and media type has been taken']], 422);
         }
         
         if ($validator->fails()) {
