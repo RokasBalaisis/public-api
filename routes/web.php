@@ -41,7 +41,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'roles'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->get('/', ['uses' => 'RoleController@index'], function (){});
             $router->get('/{id}', ['uses' => 'RoleController@show'], function (){});
             $router->post('/', ['uses' => 'RoleController@store'], function (){});
@@ -54,7 +54,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'media'], function () use ($router) {
 
-       $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+       $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->post('/', ['uses' => 'MediaController@store'], function (){});
             $router->put('/{id}', ['uses' => 'MediaController@update'], function (){});
             $router->delete('/{id}', ['uses' => 'MediaController@destroy'], function (){});
@@ -69,7 +69,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'actors'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->get('/', ['uses' => 'ActorController@index'], function (){});
             $router->get('/{id}', ['uses' => 'ActorController@show'], function (){});
             $router->post('/', ['uses' => 'ActorController@store'], function (){});
@@ -84,7 +84,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'categories'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->post('/', ['uses' => 'CategoryController@store'], function (){});
             $router->put('/{id}', ['uses' => 'CategoryController@update'], function (){});
             $router->delete('/{id}', ['uses' => 'CategoryController@destroy'], function (){});
@@ -98,7 +98,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'mediatypes'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->post('/', ['uses' => 'MediaTypeController@store'], function (){});
             $router->put('/{id}', ['uses' => 'MediaTypeController@update'], function (){});
             $router->delete('/{id}', ['uses' => 'MediaTypeController@destroy'], function (){});
@@ -113,7 +113,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'comments'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->get('/', ['uses' => 'CommentController@index'], function (){});
             $router->get('/{id}', ['uses' => 'CommentController@show'], function (){});     
             $router->put('/{id}', ['uses' => 'CommentController@update'], function (){});
@@ -127,7 +127,7 @@ $router->get('/', function () use ($router) {
 
     $router->group(['prefix' => 'ratings'], function () use ($router) {
 
-        $router->group(['middleware' => 'auth:api', 'role:admin'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin']], function () use ($router) {
             $router->get('/', ['uses' => 'RatingController@index'], function (){});
             $router->get('/{id}', ['uses' => 'RatingController@show'], function (){});    
             $router->put('/{id}', ['uses' => 'RatingController@update'], function (){});
