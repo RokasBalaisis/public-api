@@ -54,7 +54,7 @@ class Authenticate
             
             if($currentuser == null)
             return response()->json(['message' => 'Unauthorized'], 401);
-            if(Carbon::now()->timestamp - $payload['iat'] <= 120){
+            if(Carbon::now()->timestamp - $payload['iat'] <= 1800){
                 return $next($request);
             }
             else
