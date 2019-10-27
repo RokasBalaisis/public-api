@@ -45,7 +45,7 @@ class CategoryController extends Controller
         $category->media_type_id = $request->media_type_id;
         $category->name = $request->name;
         $category->save();
-        return response()->json(['message' => 'Category has been successfuly created', 'category' => $category], 200);
+        return response()->json(['message' => 'Category has been successfuly created', 'category' => $category], 201);
     }
 
     /**
