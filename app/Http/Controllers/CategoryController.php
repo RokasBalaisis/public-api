@@ -34,7 +34,7 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'media_type_id' => ['required', 'exists:media,id', 'integer'],
-            'name' => ['required', 'unique:categories', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u']
+            'name' => ['required', 'unique:categories,name,NULL,id,media_type_id', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u']
         ]);
         
         if ($validator->fails()) {
@@ -77,7 +77,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
         $validator = Validator::make($request->all(), [
             'media_type_id' => ['exists:media,id', 'integer'],
-            'name' => ['unique:categories', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u']
+            'name' => ['unique:categories,name,NULL,id,media_type_id', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u']
         ]);
         
         if ($validator->fails()) {
