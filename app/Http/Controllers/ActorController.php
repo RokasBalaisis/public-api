@@ -49,7 +49,7 @@ class ActorController extends Controller
         $actor->born = $request->born;
         $actor->info = $request->info;
         $actor->save();
-        return response()->json(['message' => 'Actor has been successfuly created', 'actor' => $actor], 200);
+        return response()->json(['message' => 'Actor has been successfuly created', 'actor' => $actor], 201);
     }
 
     /**
