@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Role;
 use App\Comment;
@@ -19,6 +20,7 @@ class CommentController extends Controller
      */
     public function index()
     {
+        dd(Auth::user()->role()->get());
         $comments = Comment::all();
         return response()->json(['comments' => $comments], 200);
     }
