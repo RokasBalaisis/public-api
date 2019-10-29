@@ -4,11 +4,8 @@
 
 use PHPUnit\Framework\MockObject\MockObject;
 use App\Http\Controllers\CommentController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Collection;
-use App\User;
-use Tymon\JWTAuth\Facades\JWTAuth as TymonJWTAuth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 require('vendor/autoload.php');
 /**
@@ -18,10 +15,6 @@ require('vendor/autoload.php');
  */
 class CommentControllerTest extends TestCase
 {
-    /**
-     * @var User $user An instance of "User" to test.
-     */
-    private $user;
     /**
      * @var CommentController $commentController An instance of "CommentController" to test.
      */
@@ -43,11 +36,8 @@ class CommentControllerTest extends TestCase
     public function testIndex($email, $password, $responseCode): void
     {
         $this->setUp();
-        //Auth::attempt(['email' => '$email', 'password' => '$password']);
-        //$this->assertNotNull(Auth::user());
-        //$userRole= User::with('role')->where('id', Auth::user()->getAuthIdentifier())->first()->role->pluck('name');
-        //$this->assertEquals("admin", $userRole[0]);
-        $response = $this->commentController->index();
+        JWTAuth::attempt(['email' => $email, 'password' => $password]);
+        $response = $this->actingAs(JWTAuth::user(), 'api')->commentController->index();
         $this->assertEquals(200, $response->getStatusCode());
     }
 
