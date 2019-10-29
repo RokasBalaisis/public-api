@@ -15,18 +15,6 @@ class CommentController extends Controller
 {
 
     /**
-     * Instantiate a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-
-        $this->middleware('role:admin');
-
-    }
-    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -61,7 +49,7 @@ class CommentController extends Controller
         $comment->user_id = $request->user_id;
         $comment->text = $request->text;
         $comment->save();
-        return response()->json(['message' => 'Comment has been successfuly created', 'comment' => $comment], 200);
+        return response()->json(['message' => 'Comment has been successfuly created', 'comment' => $comment], 201);
     }
 
     /**
