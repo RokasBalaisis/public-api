@@ -20,7 +20,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        dd(User::with('role')->find(Auth::id()));
+        dd(User::with('role')->find(Auth::id())->first()->role->pluck('name'));
         $comments = Comment::all();
         return response()->json(['comments' => $comments], 200);
     }
