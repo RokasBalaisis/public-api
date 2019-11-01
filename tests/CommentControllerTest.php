@@ -5,7 +5,7 @@ use App\Http\Controllers\CommentController;
 use Laravel\Lumen\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Comment;
-
+use Illuminate\Support\Facades\DB;
 
 require('vendor/autoload.php');
 /**
@@ -133,7 +133,7 @@ class CommentControllerTest extends TestCase
         $requestData = [];
         $comment = Comment::find($id);
         $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);
-        $comment->save();
+        DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200  || $response->getStatusCode() == 404)
         {
@@ -142,7 +142,7 @@ class CommentControllerTest extends TestCase
             $request->request->add($requestData);
             $comment = Comment::find($id);
             $this->commentController->destroy($request, $id);
-            $comment->save();
+            DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);
         }
     }
 
@@ -231,11 +231,11 @@ class CommentControllerTest extends TestCase
     public function dataDestroyProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 1, 200),
+            array('admin@admin.lt', 'admin', 3, 200),
             array('admin@admin.lt', 'admin', 9999, 404),
-            array('test1@test.lt', '123456', 2, 403),
+            array('test1@test.lt', '123456', 3, 403),
             array('fake@user.lt', '123456', 174172572, 401),
-            array('admin@admin.lt', 'fakepassword', 1, 401),
+            array('admin@admin.lt', 'fakepassword', 3, 401),
         );
     }
 }
