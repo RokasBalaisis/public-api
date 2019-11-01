@@ -16,7 +16,7 @@ class Comment extends Model
      * @var array
      */
     protected $fillable = [
-        'media_id', 'user_id', 'text',
+        'id','media_id', 'user_id', 'text',
     ];
 
     protected $hidden = ['pivot'];

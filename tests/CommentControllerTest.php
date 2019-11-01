@@ -46,18 +46,8 @@ class CommentControllerTest extends TestCase
     {
         $this->setUp();
         $authorization = $this->authorize($email, $password);
-        if(isset($authorization->getHeaders()['Authorization']))
-        {
-            $response = $this->client->get(('/comments'), [
-                'headers' => [
-                    'Authorization'     => $authorization->getHeaders()['Authorization']
-                ]
-            ]);
-        }
-        else
-        {
-            $response = $this->client->get(('/actors'),);  
-        }
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/comments', $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
             $this->commentController->index();
@@ -71,71 +61,84 @@ class CommentControllerTest extends TestCase
     {
         $this->setUp();
         $authorization = $this->authorize($email, $password);
-        $token = Auth::attempt(['email' => $email, 'password' => $password]);
-
-
-        if(isset($authorization->getHeaders()['Authorization']))
-        {
-            $response = $this->client->post(('/comments'), [
-                'headers' => [
-                    'Authorization'     => $authorization->getHeaders()['Authorization']
-                ],
-                'query' => [
-                    'media_id' => $media_id,
-                    'user_id' => Auth::user()->id,
-                    'text' => $text,
-                ]
-            ]);
-            $data = json_decode($response->getBody(), true);
-            if(isset($data['comment']))
-                Comment::destroy($data['comment']['id']);
-        }
-        else
-        {
-            $response = $this->client->post(('/actors'),[
-                'query' => [
-                    'media_id' => $media_id,
-                    'user_id' => null,
-                    'text' => $text,
-                ]
-            ]);  
-        }
+        $requestData = [
+            'media_id' => $media_id,
+            'user_id' => $this->setUserId($email, $password),
+            'text'  => $text
+        ];
+        $response = $this->sendRequest($authorization, 'POST', '/comments', $requestData);
+        $data = json_decode($response->getBody(), true);
+        if(isset($data['comment']))
+            Comment::destroy($data['comment']['id']);
         $this->assertEquals($responseCode, $response->getStatusCode());
-        if($response->getStatusCode() == 201)
+        if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
         {
             $request = new Request();
             $request->setMethod('POST');
-            $request->request->add(['media_id' => $media_id, 'user_id' => Auth::user()->id, 'text' => $text]);
+            $request->request->add($requestData);
             $this->commentController->store($request);
+            Comment::destroy(DB::table('comments')->max('id'));
         }
             
     }
 
     /**
      * @covers \App\Http\Controllers\CommentController::show
+     * @dataProvider dataShowProvider
      */
-    public function testShow(): void
+    public function testShow($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/comments'.'/'.$id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->commentController->show($id);
     }
 
     /**
      * @covers \App\Http\Controllers\CommentController::update
+     * @dataProvider dataUpdateProvider
      */
-    public function testUpdate(): void
+    public function testUpdate($email, $password, $media_id, $text, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'media_id' => $media_id,
+            'user_id' => $this->setUserId($email, $password),
+            'text'  => $text
+        ];
+        $response = $this->sendRequest($authorization, 'PUT', '/comments' . '/' . $id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {
+            $request = new Request();
+            $request->setMethod('PUT');
+            $request->request->add($requestData);
+            $this->commentController->update($request, $id);
+        }
+            
     }
 
     /**
      * @covers \App\Http\Controllers\CommentController::destroy
      */
-    public function testDestroy(): void
+    public function testDestroy($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {
+            $request = new Request();
+            $request->setMethod('PUT');
+            $request->request->add($requestData);
+            $this->commentController->update($request, $id);
+        }
     }
 
     public function authorize($email, $password)
@@ -146,6 +149,34 @@ class CommentControllerTest extends TestCase
                 'password' => $password
             ]
         ]);
+    }
+
+    public function setUserId($email, $password)
+    {
+        $token = Auth::attempt(['email' => $email, 'password' => $password]);
+        if($token == null)
+            return null;
+        else
+            return Auth::user()->id;
+    }
+
+    public function sendRequest($authorization, $requestType, $url, array $data)
+    {
+    if(isset($authorization->getHeaders()['Authorization']))
+       {
+           return $this->client->request($requestType, $url, [
+               'headers' => [
+                   'Authorization'     => $authorization->getHeaders()['Authorization']
+               ],
+               'query' => $data
+           ]);
+       }
+       else
+       {
+        return $this->client->request($requestType, $url, [
+            'query' => $data
+        ]); 
+       }
     }
 
     public function dataIndexProvider()
@@ -161,11 +192,34 @@ class CommentControllerTest extends TestCase
     public function dataStoreProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 15, "Testing", 200),
+            array('admin@admin.lt', 'admin', 15, "Testing", 201),
             array('admin@admin.lt', 'admin', 9999, "Testing", 422),
-            array('test1@test.lt', '123456', 15, "Testing", 403),
+            array('test1@test.lt', '123456', 15, "Testing", 201),
             array('fake@user.lt', '123456', 15, "Testing", 401),
             array('admin@admin.lt', 'fakepassword', 15, "Testing", 401),
+        );
+    }
+
+    public function dataShowProvider()
+    {
+        return array(
+            array('admin@admin.lt', 'admin', 1, 200),
+            array('admin@admin.lt', 'admin', 9999, 404),
+            array('test1@test.lt', '123456', 2, 403),
+            array('fake@user.lt', '123456', 174172572, 401),
+            array('admin@admin.lt', 'fakepassword', 1, 401),
+        );
+    }
+
+    public function dataUpdateProvider()
+    {
+        return array(
+            array('admin@admin.lt', 'admin', 15, "TestingUpdated", 6, 200),
+            array('admin@admin.lt', 'admin', 9999, "TestingUpdated", 6, 422),
+            array('admin@admin.lt', 'admin', 15, "TestingUpdated", 99999, 404),
+            array('test1@test.lt', '123456', 15, "TestingUpdated", 6, 403),
+            array('fake@user.lt', '123456', 15, "TestingUpdated", 6, 401),
+            array('admin@admin.lt', 'fakepassword', 15, "TestingUpdated", 6, 401),
         );
     }
 }
