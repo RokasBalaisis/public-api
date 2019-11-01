@@ -132,13 +132,15 @@ class CommentControllerTest extends TestCase
         $authorization = $this->authorize($email, $password);
         $requestData = [];
         $comment = Comment::find($id);
-        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);               
+        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);     
+        fwrite(STDERR, $response->getStatusCode());          
         if($response->getStatusCode() == 200  || $response->getStatusCode() == 404)
         {
             $request = new Request();
             $request->setMethod('DELETE');
             $request->request->add($requestData);
-            $this->commentController->destroy($request, $id);        
+            $response = $this->commentController->destroy($request, $id);   
+  
         }
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($comment != null && $response->getStatusCode() == 200)
@@ -230,11 +232,11 @@ class CommentControllerTest extends TestCase
     public function dataDestroyProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 4, 200),
+            array('admin@admin.lt', 'admin', 7, 200),
             array('admin@admin.lt', 'admin', 9999, 404),
-            array('test1@test.lt', '123456', 4, 403),
+            array('test1@test.lt', '123456', 7, 403),
             array('fake@user.lt', '123456', 174172572, 401),
-            array('admin@admin.lt', 'fakepassword', 4, 401),
+            array('admin@admin.lt', 'fakepassword', 7, 401),
         );
     }
 }
