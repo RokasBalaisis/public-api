@@ -106,9 +106,8 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        if(Comment::find($id) !== null)
-            $test = true;
-        if(Comment::find($id) === null)
+        $comment = Comment::find($id);
+        if($comment == null)
             return response()->json(['message' => 'Comment with specified id does not exist'], 404);
         Comment::destroy($id);
         return response()->json(['message' => 'Comment has been successfuly deleted'], 200);
