@@ -109,7 +109,7 @@ class CommentController extends Controller
         if(Comment::find($id) === null)
             return response()->json(['message' => 'Comment with specified id does not exist'], 404);
         $comment = Comment::find($id);
-        $comment->delete();
+        $comment->destroy();
         return response()->json(['message' => 'Comment has been successfuly deleted'], 200);
     }
 }
