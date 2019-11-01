@@ -132,18 +132,17 @@ class CommentControllerTest extends TestCase
         $authorization = $this->authorize($email, $password);
         $requestData = [];
         $comment = Comment::find($id);
-        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);     
-        fwrite(STDERR, $response->getStatusCode());          
+        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);                
         if($response->getStatusCode() == 200  || $response->getStatusCode() == 404)
         {
+            if($response->getStatusCode() == 200)
+                DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);    
             $request = new Request();
             $request->setMethod('DELETE');
-            $request->request->add($requestData);
-            $response = $this->commentController->destroy($request, $id);   
-  
+            $response = $this->commentController->destroy($id);   
         }
         $this->assertEquals($responseCode, $response->getStatusCode());
-        if($comment != null && $response->getStatusCode() == 200)
+        if($response->getStatusCode() == 200)
             DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);    
     }
 
@@ -232,11 +231,11 @@ class CommentControllerTest extends TestCase
     public function dataDestroyProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 7, 200),
+            array('admin@admin.lt', 'admin', 9, 200),
             array('admin@admin.lt', 'admin', 9999, 404),
-            array('test1@test.lt', '123456', 7, 403),
+            array('test1@test.lt', '123456', 9, 403),
             array('fake@user.lt', '123456', 174172572, 401),
-            array('admin@admin.lt', 'fakepassword', 7, 401),
+            array('admin@admin.lt', 'fakepassword', 9, 401),
         );
     }
 }
