@@ -132,18 +132,17 @@ class CommentControllerTest extends TestCase
         $authorization = $this->authorize($email, $password);
         $requestData = [];
         $comment = Comment::find($id);
-        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);
-        DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);
-        $this->assertEquals($responseCode, $response->getStatusCode());
+        $response = $this->sendRequest($authorization, 'DELETE', '/comments' . '/' . $id, $requestData);               
         if($response->getStatusCode() == 200  || $response->getStatusCode() == 404)
         {
             $request = new Request();
             $request->setMethod('DELETE');
             $request->request->add($requestData);
-            $comment = Comment::find($id);
-            $this->commentController->destroy($request, $id);
-            DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);
+            $this->commentController->destroy($request, $id);        
         }
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($comment != null && $response->getStatusCode() == 200)
+            DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);    
     }
 
     public function authorize($email, $password)
@@ -208,7 +207,7 @@ class CommentControllerTest extends TestCase
     public function dataShowProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 1, 200),
+            array('admin@admin.lt', 'admin', 44, 200),
             array('admin@admin.lt', 'admin', 9999, 404),
             array('test1@test.lt', '123456', 2, 403),
             array('fake@user.lt', '123456', 174172572, 401),
@@ -231,11 +230,11 @@ class CommentControllerTest extends TestCase
     public function dataDestroyProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 3, 200),
+            array('admin@admin.lt', 'admin', 4, 200),
             array('admin@admin.lt', 'admin', 9999, 404),
-            array('test1@test.lt', '123456', 3, 403),
+            array('test1@test.lt', '123456', 4, 403),
             array('fake@user.lt', '123456', 174172572, 401),
-            array('admin@admin.lt', 'fakepassword', 3, 401),
+            array('admin@admin.lt', 'fakepassword', 4, 401),
         );
     }
 }
