@@ -40,6 +40,19 @@ class ActorControllerTest extends TestCase
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function tearDown(): void
+    {
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
+        $this->mediaTypeController = null;
+        $this->client = null;
+        parent::tearDown();
+    }
+
+    /**
      * @covers \App\Http\Controllers\ActorController::index
      * @dataProvider dataIndexProvider
      */
@@ -52,7 +65,7 @@ class ActorControllerTest extends TestCase
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
             $this->actorController->index();
-        
+        $this->tearDown();
     }
 
     /**
@@ -82,6 +95,7 @@ class ActorControllerTest extends TestCase
             $this->actorController->store($request);
             Actor::destroy(DB::table('actors')->max('id'));
         }
+        $this->tearDown();
     }
     /**
      * @covers \App\Http\Controllers\ActorController::show
@@ -96,6 +110,7 @@ class ActorControllerTest extends TestCase
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
             $this->actorController->show($id);
+        $this->tearDown();
     }
     
 
@@ -122,6 +137,7 @@ class ActorControllerTest extends TestCase
             $request->request->add($requestData);
             $this->actorController->update($request, $id);
         }
+        $this->tearDown();
     }
 
     /**
@@ -145,7 +161,8 @@ class ActorControllerTest extends TestCase
         }
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
-        DB::table('actors')->insert(['id' => $actor->id, 'name' => $actor->name, 'surname' => $actor->surname, 'born' => $actor->born, 'info' => $actor->info, 'created_at' => $actor->created_at, 'updated_at' => $actor->updated_at]);    
+            DB::table('actors')->insert(['id' => $actor->id, 'name' => $actor->name, 'surname' => $actor->surname, 'born' => $actor->born, 'info' => $actor->info, 'created_at' => $actor->created_at, 'updated_at' => $actor->updated_at]);
+        $this->tearDown();    
     }
 
     public function authorize($email, $password)

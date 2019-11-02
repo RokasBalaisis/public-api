@@ -29,19 +29,13 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        try {
             DB::table('users')->insert(['username' => $request->username, 'email' => $request->email, 'password' => app('hash')->make($request->password), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
             $user = DB::table('users')->where('username', $request->username)->where('email', $request->email)->first();
             DB::table('user_role')->insert(['user_id' => $user->id, 'role_id' => 2]);
 
             //return successful response
             return response()->json(['user' => $user, 'message' => 'User registration was successful'], 201);
-
-        } catch (\Exception $e) {
-            //return error message
-            return response()->json(['message' => 'User Registration Failed!'], 409);
-        }
-
+        
     }
 
        /**

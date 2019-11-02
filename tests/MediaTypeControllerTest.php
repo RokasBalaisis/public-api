@@ -6,6 +6,7 @@ use App\Http\Controllers\MediaTypeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
+use App\MediaType;
 
 require('vendor/autoload.php');
 
@@ -36,6 +37,19 @@ class MediaTypeControllerTest extends TestCase
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function tearDown(): void
+    {
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
+        $this->mediaTypeController = null;
+        $this->client = null;
+        parent::tearDown();
+    }
+
+    /**
      * @covers \App\Http\Controllers\MediaTypeController::index
      * @dataProvider dataIndexProvider
      */
@@ -48,134 +62,136 @@ class MediaTypeControllerTest extends TestCase
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
             $this->mediaTypeController->index();
+        $this->tearDown();
     }
 
+    /**
+     * @covers \App\Http\Controllers\MediaTypeController::indexMedia
+     * @dataProvider dataIndexProvider
+     */
+    public function testIndexMedia($email, $password, $responseCode): void
+    {
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/mediatypes/media', $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200)
+            $this->mediaTypeController->indexMedia();
+        $this->tearDown();
+    }
 
     /**
      * @covers \App\Http\Controllers\MediaTypeController::store
-     * @dataProvider providerStoreData
+     * @dataProvider dataStoreProvider
      */
     public function testStore($email, $password, $name, $responseCode): void
     {
-        $response = $this->client->post('/login', [
-            'query' => [
-                'email' => $email,
-                'password' => $password
-            ]
-        ]);
-        if(isset($response->getHeaders()['Authorization']))
-        {
-            $response = $this->client->post('/mediatypes', [
-                'headers' => [
-                    'Authorization'     => $response->getHeaders()['Authorization']
-                ],
-                'query' => [
-                    'name' => $name
-                ]
-            ]);
-        }
-        else
-        {
-            $response = $this->client->post('/mediatypes', [
-                'query' => [
-                    'name' => $name
-            ]]);  
-        }
-        if($response->getStatusCode() == 201)
-            DB::table('media_types')->where('id', DB::table('media_types')->max('id'))->delete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'name' => $name
+        ];
+        $response = $this->sendRequest($authorization, 'POST', '/mediatypes', $requestData);
+        $data = json_decode($response->getBody(), true);
+        if(isset($data['media_type']))
+            MediaType::destroy($data['media_type']['id']);
         $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
+        {
+            $request = new Request();
+            $request->setMethod('POST');
+            $request->request->add($requestData);
+            $this->mediaTypeController->store($request);
+            if($response->getStatusCode() == 201)
+                MediaType::destroy(DB::table('media_types')->max('id'));
+        }
+        $this->tearDown();
     }
 
     /**
      * @covers \App\Http\Controllers\MediaTypeController::show
-     * @dataProvider providerShowData
+     * @dataProvider dataShowProvider
      */
     public function testShow($email, $password, $id, $responseCode): void
     {
-        $response = $this->client->post('/login', [
-            'query' => [
-                'email' => $email,
-                'password' => $password
-            ]
-        ]);
-        if(isset($response->getHeaders()['Authorization']))
-        {
-            $response = $this->client->get(('/mediatypes' . '/' . $id), [
-                'headers' => [
-                    'Authorization'     => $response->getHeaders()['Authorization']
-                ]
-            ]);
-        }
-        else
-        {
-            $response = $this->client->get(('/mediatypes' . '/' . $id),);  
-        }
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/mediatypes'.'/'.$id, $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->mediaTypeController->show($id);
+        $this->tearDown();
+    }
+
+    /**
+     * @covers \App\Http\Controllers\MediaTypeController::showMedia
+     * @dataProvider dataShowProvider
+     */
+    public function testShowMedia($email, $password, $id, $responseCode): void
+    {
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/mediatypes'.'/'.$id.'/media', $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->mediaTypeController->showMedia($id);
+        $this->tearDown();
     }
 
 
     /**
      * @covers \App\Http\Controllers\MediaTypeController::update
-     * @dataProvider providerUpdateData
+     * @dataProvider dataUpdateProvider
      */
     public function testUpdate($email, $password, $name, $id, $responseCode): void
     {
-        $response = $this->client->post('/login', [
-            'query' => [
-                'email' => $email,
-                'password' => $password
-            ]
-        ]);
-        if(isset($response->getHeaders()['Authorization']))
-        {
-            $response = $this->client->put('/mediatypes' . '/' . $id, [
-                'headers' => [
-                    'Authorization'     => $response->getHeaders()['Authorization']
-                ],
-                'query' => [
-                    'name' => $name
-                ]
-            ]);
-        }
-        else
-        {
-            $response = $this->client->put('/mediatypes' . '/' . $id, [
-                'query' => [
-                    'name' => $name
-            ]]);  
-        }
+        $this->setUp();
+        $currentName = DB::table('media_types')->where('id', $id)->value('name');
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'name' => $name,
+        ];
+        $response = $this->sendRequest($authorization, 'PUT', '/mediatypes' . '/' . $id, $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
+        MediaType::where('id', $id)->update(['name' => $currentName]);
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {
+            
+            $request = new Request();
+            $request->setMethod('PUT');
+            $request->request->add($requestData);
+            $test = $this->mediaTypeController->update($request, $id);
+            MediaType::where('id', $id)->update(['name' => $currentName]);
+        }
+        $this->tearDown(); 
     }
 
     /**
      * @covers \App\Http\Controllers\MediaTypeController::destroy
-     * @dataProvider providerDestroyData
+     * @dataProvider dataDestroyProvider
      */
     public function testDestroy($email, $password, $id, $responseCode): void
     {
-        $response = $this->client->post('/login', [
-            'query' => [
-                'email' => $email,
-                'password' => $password
-            ]
-        ]);
-        if(isset($response->getHeaders()['Authorization']))
-        {
-            if($responseCode == 200){
-                DB::table('media_types')->insert(['name' => 'Deletable']);
-                $id = DB::table('media_types')->max('id');
-            }
-            $response = $this->client->delete(('/mediatypes' . '/' . $id), [
-                'headers' => [
-                    'Authorization'     => $response->getHeaders()['Authorization']
-                ]
-            ]);
-        }
-        else
-        {
-            $response = $this->client->delete(('/mediatypes' . '/' . $id),);  
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $media_type = MediaType::find($id);
+        $response = $this->sendRequest($authorization, 'DELETE', '/mediatypes' . '/' . $id, $requestData);         
+        if($response->getStatusCode() == 200  || $response->getStatusCode() == 404 || $response->getStatusCode() == 422)
+        {   
+            if($response->getStatusCode() == 200)
+            DB::table('media_types')->insert(['id' => $media_type->id, 'name' => $media_type->name, 'created_at' => $media_type->created_at, 'updated_at' => $media_type->updated_at]); 
+            $request = new Request();
+            $request->setMethod('DELETE');
+            $response = $this->mediaTypeController->destroy($id); 
+            if($response->getStatusCode() == 200)
+            DB::table('media_types')->insert(['id' => $media_type->id, 'name' => $media_type->name, 'created_at' => $media_type->created_at, 'updated_at' => $media_type->updated_at]);     
         }
         $this->assertEquals($responseCode, $response->getStatusCode());
+        $this->tearDown();         
     }
 
     public function authorize($email, $password)
@@ -231,13 +247,13 @@ class MediaTypeControllerTest extends TestCase
     public function dataStoreProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', 201),
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', 'fakedata', 'Providedinfo', 422),
-            array('test1@test.lt', '123456', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', 403),
-            array('fake@user.lt', '123456', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', 401),
-            array('administrator@admin.lt', 'fakepassword', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', 401),
-            array('test1@test.lt', 'fakepassword','Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', 401),
-            array('fake@user.lt', 'fakepassword', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', 401)
+            array('admin@admin.lt', 'admin', 'Testingtype', 201),
+            array('admin@admin.lt', 'admin', 'IvalidInput1652', 422),
+            array('test1@test.lt', '123456', 'Testingtype', 403),
+            array('fake@user.lt', '123456', 'Testingtype', 401),
+            array('administrator@admin.lt', 'fakepassword', 'Testingtype', 401),
+            array('test1@test.lt', 'fakepassword', 'Testingtype', 401),
+            array('fake@user.lt', 'fakepassword', 'Testingtype', 401)
         );
     }
 
@@ -245,37 +261,38 @@ class MediaTypeControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '1', 200),
-            array('test1@test.lt', '123456', '1', 403),
-            array('fake@user.lt', '123456', '1', 401),
-            array('admin@admin.lt', 'admin', '99999', 404),
-            array('admin@admin.lt', 'admin', '61346', 404),
-            array('fake@user.lt', 'fakepassword', '1', 401)
+            array('test1@test.lt', '123456', '1', 200),
+            array('fake@user.lt', '123456', '1', 200),
+            array('administrator@admin.lt', 'fakepassword', '8989898', 404),
+            array('test1@test.lt', 'fakepassword', '17578678', 404),
+            array('fake@user.lt', 'fakepassword', '275827437', 404)
         );
     }
 
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '21', 200),
-            array('test1@test.lt', '123456', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '21', 403),
-            array('fake@user.lt', '123456', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '21', 401),
-            array('administrator@admin.lt', 'fakepassword', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '8498', 401),
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '99999', 404),
-            array('fake@user.lt', 'fakepassword', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '65149', 401),
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', 'incorrect-datetime', 'Providedinfo', '21', 422),
+            array('admin@admin.lt', 'admin', 'Test', '3', 200),
+            array('admin@admin.lt', 'admin', 'movies', '1', 422),
+            array('admin@admin.lt', 'admin', 'Test', '9548', 404),
+            array('test1@test.lt', '123456', 'Test', '3', 403),
+            array('fake@user.lt', '123456', 'Test', '3', 401),
+            array('administrator@admin.lt', 'fakepassword', 'Test', '6518', 401),
+            array('test1@test.lt', 'fakepassword', 'Test', '9859484', 401),
+            array('fake@user.lt', 'fakepassword', 'Test', '416421', 401)
         );
     }
 
     public function dataDestroyProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '9', 200),
-            array('admin@admin.lt', 'admin', '15', 422),
-            array('test1@test.lt', '123456', '9', 403),
-            array('fake@user.lt', '123456', '9', 401),
+            array('admin@admin.lt', 'admin', '3', 200),
+            array('admin@admin.lt', 'admin', '2', 422),
+            array('test1@test.lt', '123456', '2', 403),
+            array('fake@user.lt', '123456', '2', 401),
             array('admin@admin.lt', 'admin', '99999', 404),
             array('admin@admin.lt', 'admin', '61346', 404),
-            array('fake@user.lt', 'fakepassword', '9', 401)
+            array('fake@user.lt', 'fakepassword', '2', 401)
         );
     }
 }

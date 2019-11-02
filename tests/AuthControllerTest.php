@@ -3,9 +3,9 @@
 
 
 use App\Http\Controllers\AuthController;
-use PHPUnit\Framework\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 require('vendor/autoload.php');
 
@@ -27,7 +27,7 @@ class AuthControllerTest extends TestCase
      */
     protected function setUp(): void
     {
-        /** @todo Maybe add some arguments to this constructor */
+        parent::setUp();
         $this->authController = new AuthController();
         $this->client = new GuzzleHttp\Client([
             'base_uri' => 'https://api.moviesandtvshows.com/',
@@ -36,22 +36,43 @@ class AuthControllerTest extends TestCase
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function tearDown(): void
+    {
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
+        $this->authController = new AuthController();
+        $this->client = null;
+        parent::tearDown();
+    }
+
+    /**
      * @covers \App\Http\Controllers\AuthController::register
-     * @dataProvider providerRegisterData
+     * @dataProvider dataRegisterProvider
      */
     public function testRegister($username, $email, $password, $responseCode): void
     {
-        $response = $this->client->post('/register', [
-            'query' => [
-                'username' => $username,
-                'email' => $email,
-                'password' => $password
-            ]
-        ]);
-
+        $this->setUp();
+        $requestData = [
+            'username' => $username,
+            'email' => $email,
+            'password' => $password
+        ];
+        $response = $this->sendRequestWithoutAuthorization('POST', '/register', $requestData);
+        DB::table('users')->where('email', $email)->delete();
         $this->assertEquals($responseCode, $response->getStatusCode());
-        if($response->getStatusCode() == 422)
-            DB::table('users')->where('email', $email)->delete();
+        if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
+        {
+            $request = new Request();
+            $request->setMethod('POST');
+            $request->request->add($requestData);
+            $this->authController->register($request);
+            if($response->getStatusCode() == 201)
+                DB::table('users')->where('email', $email)->delete();
+        }        
+        $this->tearDown();
     }
 
     /**
@@ -99,14 +120,59 @@ class AuthControllerTest extends TestCase
 
     }
 
-    public function providerRegisterData() {
+    public function authorize($email, $password)
+    {
+       return $this->client->post('/login', [
+            'query' => [
+                'email' => $email,
+                'password' => $password
+            ]
+        ]);
+    }
+
+    public function setUserId($email, $password)
+    {
+        $token = Auth::attempt(['email' => $email, 'password' => $password]);
+        if($token == null)
+            return null;
+        else
+            return Auth::user()->id;
+    }
+
+    public function sendRequestWithoutAuthorization($requestType, $url, array $data)
+    {
+        return $this->client->request($requestType, $url, [
+            'query' => $data
+        ]); 
+    }
+
+    public function sendRequest($authorization, $requestType, $url, array $data)
+    {
+    if(isset($authorization->getHeaders()['Authorization']))
+       {
+           return $this->client->request($requestType, $url, [
+               'headers' => [
+                   'Authorization'     => $authorization->getHeaders()['Authorization']
+               ],
+               'query' => $data
+           ]);
+       }
+       else
+       {
+        return $this->client->request($requestType, $url, [
+            'query' => $data
+        ]); 
+       }
+    }
+
+    public function dataRegisterProvider() {
         return array(
             array('Username1','provider1@test.lt', '123456', 201),
-            array('Username1','provider1@test.lt', '123456', 422),
+            array('InvalidUsername..','invalid_email', '123456', 422),
             array('Username2','provider2@test.lt', '123456', 201),
-            array('Username2','provider2@test.lt', '123456', 422),
+            array('InvalidUsername..','invalid_email', '123456', 422),
             array('Username3','provider3@test.lt', '123456', 201),
-            array('Username3','provider3@test.lt', '123456', 422),
+            array('InvalidUsername..','invalid_email', '123456', 422),
         );
     }
     public function providerLoginData() {

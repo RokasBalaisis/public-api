@@ -39,6 +39,19 @@ class CommentControllerTest extends TestCase
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function tearDown(): void
+    {
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
+        $this->mediaTypeController = null;
+        $this->client = null;
+        parent::tearDown();
+    }
+
+    /**
      * @covers \App\Http\Controllers\CommentController::index
      * @dataProvider dataIndexProvider
      */
@@ -51,6 +64,7 @@ class CommentControllerTest extends TestCase
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
             $this->commentController->index();
+        $this->tearDown();
     }
 
     /**
@@ -77,9 +91,10 @@ class CommentControllerTest extends TestCase
             $request->setMethod('POST');
             $request->request->add($requestData);
             $this->commentController->store($request);
-            Comment::destroy(DB::table('comments')->max('id'));
+            if($response->getStatusCode() == 201)
+                Comment::destroy(DB::table('comments')->max('id'));
         }
-            
+        $this->tearDown();     
     }
 
     /**
@@ -95,6 +110,7 @@ class CommentControllerTest extends TestCase
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
             $this->commentController->show($id);
+        $this->tearDown();
     }
 
     /**
@@ -119,7 +135,7 @@ class CommentControllerTest extends TestCase
             $request->request->add($requestData);
             $this->commentController->update($request, $id);
         }
-            
+        $this->tearDown();   
     }
 
     /**
@@ -143,7 +159,8 @@ class CommentControllerTest extends TestCase
         }
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
-            DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]);    
+            DB::table('comments')->insert(['id' => $comment->id, 'media_id' => $comment->media_id, 'user_id' => $comment->user_id, 'text' => $comment->text, 'created_at' => $comment->created_at, 'updated_at' => $comment->updated_at]); 
+        $this->tearDown();   
     }
 
     public function authorize($email, $password)
