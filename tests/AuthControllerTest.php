@@ -105,15 +105,16 @@ class AuthControllerTest extends TestCase
     public function testLogout($email, $password, $responseCode): void
     {
         $this->setUp();
+        $authorization = $this->authorize($email, $password);
         $requestData = [];
         $response = $this->sendRequest($authorization, 'POST', '/logout', $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)
         {
+            Auth::attempt(['email' => $email, 'password' => $password]);
             $this->authController->logout();
         }
         $this->tearDown();
-
     }
 
     public function authorize($email, $password)
@@ -183,6 +184,7 @@ class AuthControllerTest extends TestCase
     }
     public function dataLogoutProvider() {
         return array(
+            array('admin@admin.lt', 'admin', 200),
             array('administrator@admin.lt', '123456', 200),
             array('test1@test.lt', '123456', 200),
             array('fake@user.lt', '123456', 401),

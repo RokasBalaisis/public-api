@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\App\Http\Controllers;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
+use App\Category;
+
+require('vendor/autoload.php');
 
 /**
  * Class CategoryControllerTest.
@@ -14,6 +16,11 @@ use Illuminate\Http\Request;
  */
 class CategoryControllerTest extends TestCase
 {
+    /**
+     * @var Client $client An instance of Client to test.
+     */
+    protected $client;
+
     /**
      * @var CategoryController $categoryController An instance of "CategoryController" to test.
      */
