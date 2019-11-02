@@ -81,7 +81,7 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category with specified id does not exist'], 404);
         $category = Category::find($id);
         $validator = Validator::make($request->all(), [
-            'media_type_id' => ['exists:media,id', 'integer'],
+            'media_type_id' => ['exists:media_types,id', 'integer'],
             'name' => ['regex:/(^([a-zA-Z]+)(\d+)?$)/u']
         ]);
         if(DB::table('categories')->where('media_type_id', $request->media_type_id)->where('name', $request->name)->count() > 0)

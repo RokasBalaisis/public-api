@@ -163,7 +163,7 @@ class MediaTypeControllerTest extends TestCase
             $request = new Request();
             $request->setMethod('PUT');
             $request->request->add($requestData);
-            $test = $this->mediaTypeController->update($request, $id);
+            $this->mediaTypeController->update($request, $id);
             MediaType::where('id', $id)->update(['name' => $currentName]);
         }
         $this->tearDown(); 

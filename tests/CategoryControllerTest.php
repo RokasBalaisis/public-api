@@ -98,20 +98,47 @@ class CategoryControllerTest extends TestCase
 
     /**
      * @covers \App\Http\Controllers\CategoryController::show
+     * @dataProvider dataShowProvider
      */
-    public function testShow(): void
+    public function testShow($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/categories'.'/'.$id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->categoryController->show($id);
+        $this->tearDown();
     }
 
     /**
      * @covers \App\Http\Controllers\CategoryController::update
+     * @dataProvider dataUpdateProvider
      */
-    public function testUpdate(): void
+    public function testUpdate($email, $password, $media_type_id, $name, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $currentMediaTypeId = DB::table('categories')->where('id', $id)->value('media_type_id');
+        $currentName = DB::table('categories')->where('id', $id)->value('name');
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'media_type_id' => $media_type_id,
+            'name' => $name
+        ];
+        $response = $this->sendRequest($authorization, 'PUT', '/categories' . '/' . $id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        Category::where('id', $id)->update(['media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {
+            
+            $request = new Request();
+            $request->setMethod('PUT');
+            $request->request->add($requestData);
+            $this->categoryController->update($request, $id);
+            Category::where('id', $id)->update(['media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
+        }
+        $this->tearDown(); 
     }
 
     /**
@@ -175,6 +202,7 @@ class CategoryControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '1', 'testcategory', 201),
+            array('admin@admin.lt', 'admin', '1', 'action', 422),
             array('admin@admin.lt', 'admin', '50', 'testcategory', 422),
             array('test1@test.lt', '123456', '1', 'testcategory', 403),
             array('fake@user.lt', '123456', '1', 'testcategory', 401),
@@ -186,24 +214,23 @@ class CategoryControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '1', 200),
-            array('test1@test.lt', '123456', '1', 403),
-            array('fake@user.lt', '123456', '1', 401),
+            array('test1@test.lt', '123456', '1', 200),
+            array('fake@user.lt', '123456', '1', 200),
             array('admin@admin.lt', 'admin', '99999', 404),
             array('admin@admin.lt', 'admin', '61346', 404),
-            array('fake@user.lt', 'fakepassword', '1', 401)
+            array('fake@user.lt', 'fakepassword', '1', 200)
         );
     }
 
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '21', 200),
-            array('test1@test.lt', '123456', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '21', 403),
-            array('fake@user.lt', '123456', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '21', 401),
-            array('administrator@admin.lt', 'fakepassword', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '8498', 401),
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '99999', 404),
-            array('fake@user.lt', 'fakepassword', 'Providedname', 'Providedsurname', '2000-01-01 12:12:12', 'Providedinfo', '65149', 401),
-            array('admin@admin.lt', 'admin', 'Providedname', 'Providedsurname', 'incorrect-datetime', 'Providedinfo', '21', 422),
+            array('admin@admin.lt', 'admin', '1', 'testcategory', '55', 200),
+            array('admin@admin.lt', 'admin', '1', 'test', '55', 422),
+            array('admin@admin.lt', 'admin', '50', 'testcategory', '55', 422),
+            array('test1@test.lt', '123456', '1', 'testcategory', '55', 403),
+            array('fake@user.lt', '123456', '1', 'testcategory', '55', 401),
+            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', '55', 401)
         );
     }
 
