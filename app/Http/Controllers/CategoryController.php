@@ -33,7 +33,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'media_type_id' => ['required', 'exists:media,id', 'integer'],
+            'media_type_id' => ['required', 'exists:media_types,id', 'integer'],
             'name' => ['required', 'regex:/(^([a-zA-Z]+)(\d+)?$)/u']
         ]);
 

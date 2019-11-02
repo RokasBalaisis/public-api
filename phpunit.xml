@@ -24,6 +24,8 @@
 			  <directory>./app/listeners</directory>
 			  <directory>./app/providers</directory>
 			  <directory>./app/http/middleware</directory>
+			  <file>./app/http/controllers/Controller.php</file>
+			  <file>./app/helpers.php</file>
 			</exclude>
         </whitelist>
     </filter>
