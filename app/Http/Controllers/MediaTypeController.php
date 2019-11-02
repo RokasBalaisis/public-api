@@ -21,7 +21,7 @@ class MediaTypeController extends Controller
     public function index()
     {
         $media_types = MediaType::with('categories')->get();
-        if($media_types->count() > 1)
+        if($media_types->count() > 0)
         {
             $media_types->transform(function ($entry) {
                 $entry->categories->transform(function ($item) {
@@ -31,13 +31,13 @@ class MediaTypeController extends Controller
                 return $entry;
             });
         }
-        else if($media_types->count() == 1){
-            $media_types = MediaType::with('categories')->first();
-            $media_types->categories->transform(function ($item) {
-                unset($item->media_type_id);       
-                return $item;
-            });     
-        }
+        // else if($media_types->count() == 1){
+        //     $media_types = MediaType::with('categories')->first();
+        //     $media_types->categories->transform(function ($item) {
+        //         unset($item->media_type_id);       
+        //         return $item;
+        //     });     
+        // }
         return response()->json(['media_types' => $media_types], 200);
     }
 
