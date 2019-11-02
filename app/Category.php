@@ -16,7 +16,7 @@ class Category extends Model
      * @var array
      */
     protected $fillable = [
-        'media_type','name',
+        'id', 'media_type','name',
     ];
 
     protected $hidden = ['pivot'];

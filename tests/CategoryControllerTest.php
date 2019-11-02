@@ -128,7 +128,7 @@ class CategoryControllerTest extends TestCase
         ];
         $response = $this->sendRequest($authorization, 'PUT', '/categories' . '/' . $id, $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
-        Category::where('id', $id)->update(['media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
+        Category::where('id', $id)->update(['id' => $id, 'media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
         if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
         {
             
@@ -136,7 +136,7 @@ class CategoryControllerTest extends TestCase
             $request->setMethod('PUT');
             $request->request->add($requestData);
             $this->categoryController->update($request, $id);
-            Category::where('id', $id)->update(['media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
+            Category::where('id', $id)->update(['id' => $id, 'media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
         }
         $this->tearDown(); 
     }
@@ -225,12 +225,12 @@ class CategoryControllerTest extends TestCase
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '1', 'testcategory', '55', 200),
-            array('admin@admin.lt', 'admin', '1', 'test', '55', 422),
-            array('admin@admin.lt', 'admin', '50', 'testcategory', '55', 422),
-            array('test1@test.lt', '123456', '1', 'testcategory', '55', 403),
-            array('fake@user.lt', '123456', '1', 'testcategory', '55', 401),
-            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', '55', 401)
+            array('admin@admin.lt', 'admin', '1', 'testcategory', '58', 200),
+            array('admin@admin.lt', 'admin', '1', 'test', '58', 422),
+            array('admin@admin.lt', 'admin', '50', 'testcategory', '58', 422),
+            array('test1@test.lt', '123456', '1', 'testcategory', '58', 403),
+            array('fake@user.lt', '123456', '1', 'testcategory', '58', 401),
+            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', '58', 401)
         );
     }
 
