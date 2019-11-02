@@ -68,7 +68,8 @@ class AuthControllerTest extends TestCase
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
-            $this->authController->register($request);
+            $test = $this->authController->register($request);
+            fwrite(STDERR, $test);
             if($response->getStatusCode() == 201)
                 DB::table('users')->where('email', $email)->delete();
         }        
