@@ -68,8 +68,7 @@ class AuthControllerTest extends TestCase
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
-            $test = $this->authController->register($request);
-            fwrite(STDERR, $test);
+            $this->authController->register($request);
             if($response->getStatusCode() == 201)
                 DB::table('users')->where('email', $email)->delete();
         }        
@@ -78,46 +77,42 @@ class AuthControllerTest extends TestCase
 
     /**
      * @covers \App\Http\Controllers\AuthController::login
-     * @dataProvider providerLoginData
+     * @dataProvider dataLoginProvider
      */
     public function testLogin($email, $password, $responseCode): void
     {
-                $response = $this->client->post('/login', [
-                    'query' => [
-                        'email' => $email,
-                        'password' => $password
-                    ]
-                ]);
-
-                $this->assertEquals($responseCode, $response->getStatusCode());
+        $this->setUp();
+        $requestData = [
+            'email' => $email,
+            'password' => $password
+        ];
+        $response = $this->sendRequestWithoutAuthorization('POST', '/login', $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422)
+        {
+            $request = new Request();
+            $request->setMethod('POST');
+            $request->request->add($requestData);
+            $this->authController->login($request);
+        }
+        $this->tearDown();
     }
 
     /**
      * @covers \App\Http\Controllers\AuthController::logout
-     * @dataProvider providerLogoutData
+     * @dataProvider dataLogoutProvider
      */
     public function testLogout($email, $password, $responseCode): void
     {
-        $response = $this->client->post('/login', [
-            'query' => [
-                'email' => $email,
-                'password' => $password
-            ]
-        ]);
-        if(isset($response->getHeaders()['Authorization']))
-        {
-            $response = $this->client->post('/logout', [
-                'headers' => [
-                    'Authorization'     => $response->getHeaders()['Authorization']
-                ]
-            ]);
-        }
-        else
-        {
-            $response = $this->client->post('/logout');  
-        }
+        $this->setUp();
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'POST', '/logout', $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
-
+        if($response->getStatusCode() == 200)
+        {
+            $this->authController->logout();
+        }
+        $this->tearDown();
 
     }
 
@@ -176,7 +171,7 @@ class AuthControllerTest extends TestCase
             array('InvalidUsername..','invalid_email', '123456', 422),
         );
     }
-    public function providerLoginData() {
+    public function dataLoginProvider() {
         return array(
             array('administrator@admin.lt', '123456', 200),
             array('test1@test.lt', '123456', 200),
@@ -186,7 +181,7 @@ class AuthControllerTest extends TestCase
             array('fake@user.lt', 'fakepassword', 422)
         );
     }
-    public function providerLogoutData() {
+    public function dataLogoutProvider() {
         return array(
             array('administrator@admin.lt', '123456', 200),
             array('test1@test.lt', '123456', 200),
