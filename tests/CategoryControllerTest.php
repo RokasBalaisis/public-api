@@ -83,15 +83,17 @@ class CategoryControllerTest extends TestCase
         $response = $this->sendRequest($authorization, 'POST', '/categories', $requestData);
         $data = json_decode($response->getBody(), true);
         if(isset($data['category']))
-            Category::destroy($data['category']['id']);
+            DB::table('categories')->where('id', $data['category']['id'])->delete();
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
         {
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
-            $this->categoryController->store($request);
-            Category::destroy(DB::table('categories')->max('id'));
+            $test = $this->categoryController->store($request);
+            fwrite(STDERR, $test->getStatusCode());
+            if($response->getStatusCode() == 201)
+                DB::table('categories')->where('id', $data['category']['id'])->delete();
         }
         $this->tearDown();
     }
@@ -128,7 +130,7 @@ class CategoryControllerTest extends TestCase
         ];
         $response = $this->sendRequest($authorization, 'PUT', '/categories' . '/' . $id, $requestData);
         $this->assertEquals($responseCode, $response->getStatusCode());
-        Category::where('id', $id)->update(['id' => $id, 'media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
+        Category::where('id', $id)->update(['media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
         if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
         {
             
@@ -136,7 +138,7 @@ class CategoryControllerTest extends TestCase
             $request->setMethod('PUT');
             $request->request->add($requestData);
             $this->categoryController->update($request, $id);
-            Category::where('id', $id)->update(['id' => $id, 'media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
+            Category::where('id', $id)->update(['media_type_id' => $currentMediaTypeId, 'name' => $currentName]);
         }
         $this->tearDown(); 
     }
@@ -201,12 +203,12 @@ class CategoryControllerTest extends TestCase
     public function dataStoreProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '1', 'testcategory', 201),
+            array('admin@admin.lt', 'admin', '1', 'teststore', 201),
             array('admin@admin.lt', 'admin', '1', 'action', 422),
-            array('admin@admin.lt', 'admin', '50', 'testcategory', 422),
-            array('test1@test.lt', '123456', '1', 'testcategory', 403),
-            array('fake@user.lt', '123456', '1', 'testcategory', 401),
-            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', 401)
+            array('admin@admin.lt', 'admin', '50', 'teststore', 422),
+            array('test1@test.lt', '123456', '1', 'teststore', 403),
+            array('fake@user.lt', '123456', '1', 'teststore', 401),
+            array('administrator@admin.lt', 'fakepassword', '1', 'teststore', 401)
         );
     }
 
@@ -225,12 +227,12 @@ class CategoryControllerTest extends TestCase
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '1', 'testcategory', '58', 200),
-            array('admin@admin.lt', 'admin', '1', 'test', '58', 422),
-            array('admin@admin.lt', 'admin', '50', 'testcategory', '58', 422),
-            array('test1@test.lt', '123456', '1', 'testcategory', '58', 403),
-            array('fake@user.lt', '123456', '1', 'testcategory', '58', 401),
-            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', '58', 401)
+            array('admin@admin.lt', 'admin', '1', 'testcategory', '67', 200),
+            array('admin@admin.lt', 'admin', '1', 'test', '67', 422),
+            array('admin@admin.lt', 'admin', '50', 'testcategory', '67', 422),
+            array('test1@test.lt', '123456', '1', 'testcategory', '67', 403),
+            array('fake@user.lt', '123456', '1', 'testcategory', '67', 401),
+            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', '67', 401)
         );
     }
 

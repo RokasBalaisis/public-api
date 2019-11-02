@@ -93,7 +93,8 @@ class ActorControllerTest extends TestCase
             $request->setMethod('POST');
             $request->request->add($requestData);
             $this->actorController->store($request);
-            Actor::destroy(DB::table('actors')->max('id'));
+            if($response->getStatusCode() == 201)
+                Actor::destroy(DB::table('actors')->max('id'));
         }
         $this->tearDown();
     }
