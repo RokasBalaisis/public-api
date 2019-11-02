@@ -20,7 +20,7 @@ class MediaTypeController extends Controller
      */
     public function index()
     {
-        $media_types = collect(MediaType::with('categories')->first()->get());
+        $media_types = collect(MediaType::with('categories')->get());
         if($media_types->count() > 0)
         {
             $media_types->transform(function ($entry) {
