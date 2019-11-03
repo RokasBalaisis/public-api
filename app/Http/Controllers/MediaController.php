@@ -112,7 +112,7 @@ class MediaController extends Controller
             unset($item->media_id);
             return $item;
         });    
-        return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 200);
+        return response()->json(['message' => 'Media has been successfully created', 'media' => $media], 201);
     }
 
     /**
@@ -166,7 +166,6 @@ class MediaController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-       try {
             $media = Media::with('files', 'actors')->find($id);
             if($request->category_id != null)
                 $media->category_id = $request->category_id;
@@ -232,10 +231,6 @@ class MediaController extends Controller
             //return successful response
             return response()->json(['message' => 'Media information has been successfuly updated', 'media' => $media], 200);
 
-        } catch (\Exception $e) {
-            //return error message
-           return response()->json(['message' => 'Media edit failed!'], 409);
-        }
     }
 
     /**

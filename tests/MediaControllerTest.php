@@ -7,6 +7,8 @@ use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
 use App\Media;
 use App\MediaFile;
+use App\Actor;
+use Faker\Factory as Faker;
 
 require('vendor/autoload.php');
 
@@ -28,12 +30,18 @@ class MediaControllerTest extends TestCase
     private $mediaController;
 
     /**
+     * @var Faker $faker An instance of "Faker" to test.
+     */
+    private $faker;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp(): void
     {
         parent::setUp();
         $this->mediaController = new MediaController();
+        $this->faker = new Faker();
         $this->client = new GuzzleHttp\Client([
             'base_uri' => 'https://api.moviesandtvshows.com/',
             'http_errors' => false
@@ -73,30 +81,46 @@ class MediaControllerTest extends TestCase
      * @covers \App\Http\Controllers\MediaController::store
      * @dataProvider dataStoreProvider
      */
-    public function testStore($email, $password, $username, $email_store, $password_store, $role_id, $responseCode): void
+    public function testStore($email, $password, $category_id, $name, $short_description, $description, $trailer_url, $imdb_rating, $actor_id, $responseCode): void
     {
         $this->setUp();
+
+
         $authorization = $this->authorize($email, $password);
         $requestData = [
-            'username' => $username,
-            'email' => $email_store,
-            'password' => $password_store,
-            'role_id' => $role_id
+            'category_id' => $category_id,
+            'name' => $name,
+            'short_description' => $short_description,
+            'description' => $description,
+            'trailer_url' => $trailer_url,
+            'imdb_rating' => $imdb_rating,
+            'image[0]' => fopen(storage_path() . '\test.png', 'rb'),
+            'image[1]' => fopen(storage_path() . '\test.png', 'rb'),
+            'image[2]' => fopen(storage_path() . '\test.png', 'rb'),
+            'actor_id' => $actor_id
         ];
-        $response = $this->sendRequest($authorization, 'POST', '/users', $requestData);
+        $response = $this->sendRequestWithFiles($authorization, 'POST', '/media', $requestData);
         $data = json_decode($response->getBody(), true);
-        if(isset($data['user']))
-            if(isset($data['user']['id']))
-                User::destroy($data['user']['id']);
+        if(isset($data['media']))
+            if(isset($data['media']['id']))
+            {
+                Media::destroy($data['media']['id']);
+                foreach($data['media']['files'] as $entry)
+                    MediaFile::destroy($entry['id']);
+                foreach($data['media']['actors'] as $entry)
+                    Actor::destroy($entry['id']);
+            }
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
         {
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
-            $response = $this->userController->store($request);
+            $response = $this->mediaController->store($request);
             if($response->getStatusCode() == 201){
-                User::destroy(DB::table('users')->max('id'));
+                DB::table('media_files')->where('media_id', DB::table('media')->max('id'))->delete();
+                DB::table('media_actors')->where('media_id', DB::table('media')->max('id'))->delete();
+                Media::destroy(DB::table('media')->max('id'));
             }
         }
         $this->tearDown();
@@ -170,6 +194,70 @@ class MediaControllerTest extends TestCase
        }
     }
 
+
+    public function sendRequestWithFiles($authorization, $requestType, $url, array $data)
+    {
+    if(isset($authorization->getHeaders()['Authorization']))
+       {
+           return $this->client->request($requestType, $url,[
+            'multipart' => [
+                [
+                    'name' => 'image[0]',
+                    'contents' => fopen(storage_path() . '\test.png', 'rb'),
+                    'filename' => 'image[0]',
+                ],
+                [
+                    'name' => 'image[1]',
+                    'contents' => fopen(storage_path() . '\test.png', 'rb'),
+                    'filename' => 'image[1]',
+                ],
+                [
+                    'name' => 'image[2]',
+                    'contents' => fopen(storage_path() . '\test.png', 'rb'),
+                    'filename' => 'image[2]',
+                ],
+                [
+                    'name' => 'category_id',
+                    'contents' => $data['category_id']
+                ],
+                [
+                    'name' => 'name',
+                    'contents' => $data['name']
+                ],
+                [
+                    'name' => 'short_description',
+                    'contents' => $data['short_description']
+                ],
+                [
+                    'name' => 'description',
+                    'contents' => $data['description']
+                ],
+                [
+                    'name' => 'trailer_url',
+                    'contents' => $data['trailer_url']
+                ],
+                [
+                    'name' => 'imdb_rating',
+                    'contents' => $data['imdb_rating']
+                ],
+                [
+                    'name' => 'actor_id[0]',
+                    'contents' => $data['actor_id']
+                ],
+            ],
+            'headers' => [
+                'Authorization' => $authorization->getHeaders()['Authorization']
+            ] ,
+           ]);
+       }
+       else
+       {
+        return $this->client->request($requestType, $url, [
+            'query' => $data
+        ]); 
+       }
+    }
+
     public function dataIndexProvider()
     {
         return array(
@@ -182,11 +270,12 @@ class MediaControllerTest extends TestCase
 
     public function dataStoreProvider()
     {
+        $faker = Faker::create();
         return array(
-            array('admin@admin.lt', 'admin', 'testingUserStore', 'testuser@email.lt', '123456', '2', 201),
-            array('admin@admin.lt', 'admin', 'testing.UserStore', 'testuser@email.lt', '123456', '2', 422),
-            array('test1@test.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 403),
-            array('fake@user.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 401)
+            array('admin@admin.lt', 'admin', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '3', 201),
+            // array('admin@admin.lt', 'admin', 'testing.UserStore', 'testuser@email.lt', '123456', '2', 422),
+            // array('test1@test.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 403),
+            // array('fake@user.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 401)
         );
     }
 
