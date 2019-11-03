@@ -187,13 +187,11 @@ class MediaController extends Controller
                 foreach($request->image as $image)
                 {
                     $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
-                    array_push($ids_to_delete, DB::table('media_files')->where('media_id', $media->id)->where('folder', 'images')->where('name', 'image['.$counter.'].'.$image->getClientOriginalExtension())->pluck('id'));
+                    DB::table('media_files')->where('media_id', $media->id)->where('folder', 'images')->where('name', 'image['.$counter.'].'.$image->getClientOriginalExtension())->delete();
                     array_push($file_data, new MediaFile(['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]));
                     $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
                     $counter++;
                 }
-                if(count($ids_to_delete) > 0)
-                    DB::table('media_files')->whereIn('id', $ids_to_delete)->delete();
                 $media->files()->saveMany($file_data);
             }
 

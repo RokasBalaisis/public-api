@@ -181,9 +181,12 @@ class MediaControllerTest extends TestCase
             $request->setMethod('POST');
             $request->request->add($requestData);
             $request->request->add(['_method' => 'PUT']);
-            $request->image = ['image[0]' => UploadedFile::fake()->image('test.jpg'), 'image[1]' => UploadedFile::fake()->image('test.jpg'), 'image[2]' => UploadedFile::fake()->image('test.jpg')];
             $request->actor_id = [$requestData['actor_id[0]']];
             $request->remove_actor_id = [$requestData['actor_id[0]']];
+            $request->request->remove('image[0]');
+            $request->request->remove('image[1]');
+            $request->request->remove('image[2]');
+            $request->image = ['image[0]' => UploadedFile::fake()->image('test.jpg'), 'image[1]' => UploadedFile::fake()->image('test.jpg'), 'image[2]' => UploadedFile::fake()->image('image[3].jpg')];
             $response = $this->mediaController->update($request, $id);
             if($response->getStatusCode() != 404)
             {
@@ -312,6 +315,10 @@ class MediaControllerTest extends TestCase
            return $this->client->request($requestType, $url,[
             'multipart' => [
                 [
+                    'name' => '_method',
+                    'contents' => 'PUT'
+                ],
+                [
                     'name' => 'image[0].jpg',
                     'contents' => $data['image[0]'],
                     'filename' => 'image[0].jpg'
@@ -325,10 +332,6 @@ class MediaControllerTest extends TestCase
                     'name' => 'image[2].jpg',
                     'contents' => $data['image[2]'],
                     'filename' => 'image[2].jpg',
-                ],
-                [
-                    'name' => '_method',
-                    'contents' => 'PUT'
                 ],
                 [
                     'name' => 'category_id',
@@ -369,6 +372,10 @@ class MediaControllerTest extends TestCase
         return $this->client->request($requestType, $url,[
             'multipart' => [
                 [
+                    'name' => '_method',
+                    'contents' => 'PUT'
+                ],
+                [
                     'name' => 'image[0]',
                     'contents' => fopen(storage_path() . '\test.png', 'rb'),
                     'filename' => 'image[0]',
@@ -382,10 +389,6 @@ class MediaControllerTest extends TestCase
                     'name' => 'image[2]',
                     'contents' => fopen(storage_path() . '\test.png', 'rb'),
                     'filename' => 'image[2]',
-                ],
-                [
-                    'name' => '_method',
-                    'contents' => 'PUT'
                 ],
                 [
                     'name' => 'category_id',
