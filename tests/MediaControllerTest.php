@@ -73,10 +73,33 @@ class MediaControllerTest extends TestCase
      * @covers \App\Http\Controllers\MediaController::store
      * @dataProvider dataStoreProvider
      */
-    public function testStore(): void
+    public function testStore($email, $password, $username, $email_store, $password_store, $role_id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'username' => $username,
+            'email' => $email_store,
+            'password' => $password_store,
+            'role_id' => $role_id
+        ];
+        $response = $this->sendRequest($authorization, 'POST', '/users', $requestData);
+        $data = json_decode($response->getBody(), true);
+        if(isset($data['user']))
+            if(isset($data['user']['id']))
+                User::destroy($data['user']['id']);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
+        {
+            $request = new Request();
+            $request->setMethod('POST');
+            $request->request->add($requestData);
+            $response = $this->userController->store($request);
+            if($response->getStatusCode() == 201){
+                User::destroy(DB::table('users')->max('id'));
+            }
+        }
+        $this->tearDown();
     }
 
     /**
