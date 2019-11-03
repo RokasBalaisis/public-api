@@ -200,10 +200,37 @@ class MediaControllerTest extends TestCase
      * @covers \App\Http\Controllers\MediaController::destroy
      * @dataProvider dataDestroyProvider
      */
-    public function testDestroy(): void
+    public function testDestroy($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $currentMedia = Media::with('files', 'actors')->find($id);
+        $response = $this->sendRequest($authorization, 'DELETE', '/media' . '/' . $id, $requestData);                
+        if($response->getStatusCode() == 200  || $response->getStatusCode() == 404 || $response->getStatusCode() == 422)
+        {
+            if($response->getStatusCode() == 200)
+            {
+                DB::table('media')->insert(['id' => $id, 'category_id' => $currentMedia->category_id, 'name' => $currentMedia->name, 'short_description' => $currentMedia->short_description, 'description' => $currentMedia->description, 'trailer_url' => $currentMedia->trailer_url, 'imdb_rating' => $currentMedia->imdb_rating, 'created_at' => $currentMedia->created_at, 'updated_at' => $currentMedia->updated_at]);
+                foreach($currentMedia->actors as $actor)
+                    DB::table('media_actors')->insert(['media_id' => $id, 'actor_id' => $actor->id]);
+                foreach($currentMedia->files as $file)
+                    DB::table('media_files')->insert(['id' => $file->id, 'media_id' => $id, 'folder' => $file->folder, 'name' => $file->name, 'created_at' => $file->created_at, 'updated_at' => $file->updated_at]);
+            }  
+            $request = new Request();
+            $request->setMethod('DELETE');
+            $response = $this->mediaController->destroy($id);
+        }
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200)
+            {
+                DB::table('media')->insert(['id' => $id, 'category_id' => $currentMedia->category_id, 'name' => $currentMedia->name, 'short_description' => $currentMedia->short_description, 'description' => $currentMedia->description, 'trailer_url' => $currentMedia->trailer_url, 'imdb_rating' => $currentMedia->imdb_rating, 'created_at' => $currentMedia->created_at, 'updated_at' => $currentMedia->updated_at]);
+                foreach($currentMedia->actors as $actor)
+                    DB::table('media_actors')->insert(['media_id' => $id, 'actor_id' => $actor->id]);
+                foreach($currentMedia->files as $file)
+                    DB::table('media_files')->insert(['id' => $file->id, 'media_id' => $id, 'folder' => $file->folder, 'name' => $file->name, 'created_at' => $file->created_at, 'updated_at' => $file->updated_at]);
+            }
+        $this->tearDown(); 
     }
 
     public function authorize($email, $password)
@@ -361,6 +388,10 @@ class MediaControllerTest extends TestCase
                     'name' => 'actor_id[0]',
                     'contents' => $data['actor_id[0]']
                 ],
+                [
+                    'name' => 'remove_actor_id[0]',
+                    'contents' => $data['remove_actor_id[0]']
+                ],
             ],
             'headers' => [
                 'Authorization' => $authorization->getHeaders()['Authorization']
@@ -418,6 +449,10 @@ class MediaControllerTest extends TestCase
                     'name' => 'actor_id[0]',
                     'contents' => $data['actor_id[0]']
                 ],
+                [
+                    'name' => 'remove_actor_id[0]',
+                    'contents' => $data['remove_actor_id[0]']
+                ],
             ],
            ]); 
        }
@@ -470,7 +505,7 @@ class MediaControllerTest extends TestCase
     public function dataDestroyProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '3', 200),
+            array('admin@admin.lt', 'admin', '67', 200),
             array('test1@test.lt', '123456', '3', 403),
             array('fake@user.lt', '123456', '3', 401),
             array('admin@admin.lt', 'admin', '99999', 404),
