@@ -259,7 +259,6 @@ class RatingControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '9', 200),
-            array('admin@admin.lt', 'admin', '1', 422),
             array('test1@test.lt', '123456', '9', 403),
             array('fake@user.lt', '123456', '9', 401),
             array('admin@admin.lt', 'admin', '99999', 404),
