@@ -5,9 +5,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use App\Media;
 use App\MediaFile;
-use App\Actor;
 use Faker\Factory as Faker;
 
 require('vendor/autoload.php');
@@ -97,7 +97,7 @@ class MediaControllerTest extends TestCase
             'image[0]' => fopen(storage_path() . '\test.png', 'rb'),
             'image[1]' => fopen(storage_path() . '\test.png', 'rb'),
             'image[2]' => fopen(storage_path() . '\test.png', 'rb'),
-            'actor_id' => $actor_id
+            'actor_id[0]' => $actor_id
         ];
         $response = $this->sendRequestWithFiles($authorization, 'POST', '/media', $requestData);
         $data = json_decode($response->getBody(), true);
@@ -108,7 +108,7 @@ class MediaControllerTest extends TestCase
                 foreach($data['media']['files'] as $entry)
                     MediaFile::destroy($entry['id']);
                 foreach($data['media']['actors'] as $entry)
-                    Actor::destroy($entry['id']);
+                DB::table('media_actors')->where('media_id', $data['media']['id'])->delete();
             }
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
@@ -116,6 +116,11 @@ class MediaControllerTest extends TestCase
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
+            $request->actor_id = [$requestData['actor_id[0]']];
+            $request->request->remove('image[0]');
+            $request->request->remove('image[1]');
+            $request->request->remove('image[2]');
+            $request->image = ['image[0]' => UploadedFile::fake()->image('test.jpg'), 'image[1]' => UploadedFile::fake()->image('test.jpg'), 'image[2]' => UploadedFile::fake()->image('test.jpg')];
             $response = $this->mediaController->store($request);
             if($response->getStatusCode() == 201){
                 DB::table('media_files')->where('media_id', DB::table('media')->max('id'))->delete();
@@ -130,20 +135,62 @@ class MediaControllerTest extends TestCase
      * @covers \App\Http\Controllers\MediaController::show
      * @dataProvider dataShowProvider
      */
-    public function testShow(): void
+    public function testShow($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/media'.'/'.$id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->mediaController->show($id);
+        $this->tearDown();
     }
 
     /**
      * @covers \App\Http\Controllers\MediaController::update
      * @dataProvider dataUpdateProvider
      */
-    public function testUpdate(): void
+    public function testUpdate($email, $password, $category_id, $name, $short_description, $description, $trailer_url, $imdb_rating, $actor_id, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $currentMedia= Media::with('files', 'actors')->find($id);
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'category_id' => $category_id,
+            'name' => $name,
+            'short_description' => $short_description,
+            'description' => $description,
+            'trailer_url' => $trailer_url,
+            'imdb_rating' => $imdb_rating,
+            'image[0]' => UploadedFile::fake()->image('test.jpg'),
+            'image[1]' => UploadedFile::fake()->image('test.jpg'),
+            'image[2]' => UploadedFile::fake()->image('test.jpg'),
+            'actor_id[0]' => $actor_id,
+            'remove_actor_id[0]' => $actor_id
+        ];
+        $response = $this->sendRequestWithFilesWithSpoof($authorization, 'POST', '/media' . '/' . $id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() != 404)
+        {
+            Media::where('id', $id)->update(['category_id' => $currentMedia->category_id, 'name' => $currentMedia->name, 'short_description' => $currentMedia->short_description, 'description' => $currentMedia->description, 'trailer_url' => $currentMedia->trailer_url, 'imdb_rating' => $currentMedia->imdb_rating]);
+        }
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {           
+            $request = new Request();
+            $request->setMethod('POST');
+            $request->request->add($requestData);
+            $request->request->add(['_method' => 'PUT']);
+            $request->image = ['image[0]' => UploadedFile::fake()->image('test.jpg'), 'image[1]' => UploadedFile::fake()->image('test.jpg'), 'image[2]' => UploadedFile::fake()->image('test.jpg')];
+            $request->actor_id = [$requestData['actor_id[0]']];
+            $request->remove_actor_id = [$requestData['actor_id[0]']];
+            $response = $this->mediaController->update($request, $id);
+            if($response->getStatusCode() != 404)
+            {
+                Media::where('id', $id)->update(['category_id' => $currentMedia->category_id, 'name' => $currentMedia->name, 'short_description' => $currentMedia->short_description, 'description' => $currentMedia->description, 'trailer_url' => $currentMedia->trailer_url, 'imdb_rating' => $currentMedia->imdb_rating]);
+            }
+        }
+        $this->tearDown(); 
     }
 
     /**
@@ -242,7 +289,7 @@ class MediaControllerTest extends TestCase
                 ],
                 [
                     'name' => 'actor_id[0]',
-                    'contents' => $data['actor_id']
+                    'contents' => $data['actor_id[0]']
                 ],
             ],
             'headers' => [
@@ -258,6 +305,122 @@ class MediaControllerTest extends TestCase
        }
     }
 
+    public function sendRequestWithFilesWithSpoof($authorization, $requestType, $url, array $data)
+    {
+    if(isset($authorization->getHeaders()['Authorization']))
+       {
+           return $this->client->request($requestType, $url,[
+            'multipart' => [
+                [
+                    'name' => 'image[0].jpg',
+                    'contents' => $data['image[0]'],
+                    'filename' => 'image[0].jpg'
+                ],
+                [
+                    'name' => 'image[1].jpg',
+                    'contents' => $data['image[1]'],
+                    'filename' => 'image[1].jpg',
+                ],
+                [
+                    'name' => 'image[2].jpg',
+                    'contents' => $data['image[2]'],
+                    'filename' => 'image[2].jpg',
+                ],
+                [
+                    'name' => '_method',
+                    'contents' => 'PUT'
+                ],
+                [
+                    'name' => 'category_id',
+                    'contents' => $data['category_id']
+                ],
+                [
+                    'name' => 'name',
+                    'contents' => $data['name']
+                ],
+                [
+                    'name' => 'short_description',
+                    'contents' => $data['short_description']
+                ],
+                [
+                    'name' => 'description',
+                    'contents' => $data['description']
+                ],
+                [
+                    'name' => 'trailer_url',
+                    'contents' => $data['trailer_url']
+                ],
+                [
+                    'name' => 'imdb_rating',
+                    'contents' => $data['imdb_rating']
+                ],
+                [
+                    'name' => 'actor_id[0]',
+                    'contents' => $data['actor_id[0]']
+                ],
+            ],
+            'headers' => [
+                'Authorization' => $authorization->getHeaders()['Authorization']
+            ] ,
+           ]);
+       }
+       else
+       {
+        return $this->client->request($requestType, $url,[
+            'multipart' => [
+                [
+                    'name' => 'image[0]',
+                    'contents' => fopen(storage_path() . '\test.png', 'rb'),
+                    'filename' => 'image[0]',
+                ],
+                [
+                    'name' => 'image[1]',
+                    'contents' => fopen(storage_path() . '\test.png', 'rb'),
+                    'filename' => 'image[1]',
+                ],
+                [
+                    'name' => 'image[2]',
+                    'contents' => fopen(storage_path() . '\test.png', 'rb'),
+                    'filename' => 'image[2]',
+                ],
+                [
+                    'name' => '_method',
+                    'contents' => 'PUT'
+                ],
+                [
+                    'name' => 'category_id',
+                    'contents' => $data['category_id']
+                ],
+                [
+                    'name' => 'name',
+                    'contents' => $data['name']
+                ],
+                [
+                    'name' => 'short_description',
+                    'contents' => $data['short_description']
+                ],
+                [
+                    'name' => 'description',
+                    'contents' => $data['description']
+                ],
+                [
+                    'name' => 'trailer_url',
+                    'contents' => $data['trailer_url']
+                ],
+                [
+                    'name' => 'imdb_rating',
+                    'contents' => $data['imdb_rating']
+                ],
+                [
+                    'name' => 'actor_id[0]',
+                    'contents' => $data['actor_id[0]']
+                ],
+            ],
+           ]); 
+       }
+    }
+
+
     public function dataIndexProvider()
     {
         return array(
@@ -270,35 +433,34 @@ class MediaControllerTest extends TestCase
 
     public function dataStoreProvider()
     {
-        $faker = Faker::create();
         return array(
-            array('admin@admin.lt', 'admin', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '3', 201),
-            // array('admin@admin.lt', 'admin', 'testing.UserStore', 'testuser@email.lt', '123456', '2', 422),
-            // array('test1@test.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 403),
-            // array('fake@user.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 401)
+            array('admin@admin.lt', 'admin', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', 201),
+            array('admin@admin.lt', 'admin', '1', null, 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', 422),
+            array('test1@test.lt', '123456', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', 403),
+            array('fake@user.lt', '123456', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', 401)
         );
     }
 
     public function dataShowProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '1', 200),
-            array('test1@test.lt', '123456', '1', 403),
-            array('fake@user.lt', '123456', '1', 401),
+            array('admin@admin.lt', 'admin', '67', 200),
+            array('test1@test.lt', '123456', '1', 200),
+            array('fake@user.lt', '123456', '1', 200),
             array('admin@admin.lt', 'admin', '99999', 404),
             array('admin@admin.lt', 'admin', '61346', 404),
-            array('fake@user.lt', 'fakepassword', '1', 401)
+            array('fake@user.lt', 'fakepassword', '1', 200)
         );
     }
 
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '15', 200),
-            array('admin@admin.lt', 'admin', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '999999', 404),
-            array('admin@admin.lt', 'admin', 'testing.User', 'testuserupdated@email.lt', '123456', '2', '15', 422),
-            array('test1@test.lt', '123456', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '15', 403),
-            array('fake@user.lt', '123456', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '15', 401)
+            array('admin@admin.lt', 'admin', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', '67', 200),
+            array('admin@admin.lt', 'admin', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', '9999999', 404),
+            array('admin@admin.lt', 'admin', '999999', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', '67', 422),
+            array('test1@test.lt', '123456', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', '67', 403),
+            array('fake@user.lt', '123456', '1', 'TestingMediaStore', 'short_desc', 'desc', 'www.youtube.com/embed/testtt', '5.5', '4', '67', 401)
         );
     }
 

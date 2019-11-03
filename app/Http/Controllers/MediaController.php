@@ -192,7 +192,11 @@ class MediaController extends Controller
                     $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
                     $counter++;
                 }
-                DB::table('media_files')->whereIn('id', $ids_to_delete)->delete();
+                foreach($ids_to_delete as $id_to_delete)
+                {
+                    DB::table('media_files')->where('id', $id_to_delete)->delete();
+                }
+                
                 $media->files()->saveMany($file_data);
             }
 
