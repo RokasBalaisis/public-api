@@ -81,19 +81,20 @@ class CategoryControllerTest extends TestCase
             'name' => $name,
         ];
         $response = $this->sendRequest($authorization, 'POST', '/categories', $requestData);
+        
         $data = json_decode($response->getBody(), true);
         if(isset($data['category']))
-            DB::table('categories')->where('id', $data['category']['id'])->delete();
+            Category::destroy($data['category']['id']);
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
         {
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
-            $test = $this->categoryController->store($request);
-            fwrite(STDERR, $test->getStatusCode());
-            if($response->getStatusCode() == 201)
-                DB::table('categories')->where('id', $data['category']['id'])->delete();
+            $response = $this->categoryController->store($request);
+            if($response->getStatusCode() == 201){
+                Category::destroy(DB::table('categories')->max('id'));
+            }
         }
         $this->tearDown();
     }
@@ -145,11 +146,28 @@ class CategoryControllerTest extends TestCase
 
     /**
      * @covers \App\Http\Controllers\CategoryController::destroy
+     * @dataProvider dataDestroyProvider
      */
-    public function testDestroy(): void
+    public function testDestroy($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $category = Category::find($id);
+        $response = $this->sendRequest($authorization, 'DELETE', '/categories' . '/' . $id, $requestData);                
+        if($response->getStatusCode() == 200  || $response->getStatusCode() == 404 || $response->getStatusCode() == 422)
+        {
+            if($response->getStatusCode() == 200)
+                DB::table('categories')->insert(['id' => $category->id, 'media_type_id' => $category->media_type_id, 'name' => $category->name,  'created_at' => $category->created_at, 'updated_at' => $category->updated_at]);    
+            $request = new Request();
+            $request->setMethod('DELETE');
+            $response = $this->categoryController->destroy($id);
+            fwrite(STDERR, $response);   
+        }
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200)
+            DB::table('categories')->insert(['id' => $category->id, 'media_type_id' => $category->media_type_id, 'name' => $category->name,  'created_at' => $category->created_at, 'updated_at' => $category->updated_at]); 
+        $this->tearDown();   
     }
 
     public function authorize($email, $password)
@@ -228,6 +246,7 @@ class CategoryControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '1', 'testcategory', '67', 200),
+            array('admin@admin.lt', 'admin', '1', 'testcategory', '999999', 404),
             array('admin@admin.lt', 'admin', '1', 'test', '67', 422),
             array('admin@admin.lt', 'admin', '50', 'testcategory', '67', 422),
             array('test1@test.lt', '123456', '1', 'testcategory', '67', 403),
@@ -240,7 +259,7 @@ class CategoryControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '9', 200),
-            array('admin@admin.lt', 'admin', '15', 422),
+            array('admin@admin.lt', 'admin', '1', 422),
             array('test1@test.lt', '123456', '9', 403),
             array('fake@user.lt', '123456', '9', 401),
             array('admin@admin.lt', 'admin', '99999', 404),

@@ -109,9 +109,9 @@ class CategoryController extends Controller
         if(Category::find($id) === null)
             return response()->json(['message' => 'Category with specified id does not exist'], 404);
         if(DB::table('user_role')->where('role_id', $id)->count() > 0)
-            return response()->json(['message' => 'Cannot delete role with existing users owning it'], 422);
-        $role = Role::find($id);
+            return response()->json(['message' => 'Cannot delete category with existing users owning it'], 422);
+        $role = Category::find($id);
         $role->delete();
-        return response()->json(['message' => 'Role has been successfuly deleted'], 200);
+        return response()->json(['message' => 'Category has been successfuly deleted'], 200);
     }
 }

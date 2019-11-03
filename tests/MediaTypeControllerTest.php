@@ -102,7 +102,7 @@ class MediaTypeControllerTest extends TestCase
             $request = new Request();
             $request->setMethod('POST');
             $request->request->add($requestData);
-            $this->mediaTypeController->store($request);
+            $response = $this->mediaTypeController->store($request);
             if($response->getStatusCode() == 201)
                 MediaType::destroy(DB::table('media_types')->max('id'));
         }
