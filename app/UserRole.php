@@ -7,4 +7,5 @@ class UserRole extends Pivot
 {
     protected $table = 'user_role';
     public $incrementing = true;
+    public $timestamps = false;
 }

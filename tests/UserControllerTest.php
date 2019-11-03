@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use App\User;
+use App\UserRole;
 
 /**
  * Class UserControllerTest.
@@ -102,20 +103,53 @@ class UserControllerTest extends TestCase
      * @covers \App\Http\Controllers\UserController::show
      * @dataProvider dataShowProvider
      */
-    public function testShow(): void
+    public function testShow($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/users'.'/'.$id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->userController->show($id);
+        $this->tearDown();
     }
 
     /**
      * @covers \App\Http\Controllers\UserController::update
      * @dataProvider dataUpdateProvider
      */
-    public function testUpdate(): void
+    public function testUpdate($email, $password, $username, $email_store, $password_store, $role_id, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $currentUser= User::with('role')->find($id);
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'username' => $username,
+            'email' => $email_store,
+            'password' => $password_store,
+            'role_id' => $role_id
+        ];
+        $response = $this->sendRequest($authorization, 'PUT', '/users' . '/' . $id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() != 404)
+        {
+            User::where('id', $id)->update(['username' => $currentUser->username, 'email' => $currentUser->email, 'password' => $currentUser->password]);
+            UserRole::where('user_id', $id)->update(['role_id' => $currentUser->role[0]->id]);
+        }
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {           
+            $request = new Request();
+            $request->setMethod('PUT');
+            $request->request->add($requestData);
+            $this->userController->update($request, $id);
+            if($response->getStatusCode() != 404)
+            {
+                User::where('id', $id)->update(['username' => $currentUser->username, 'email' => $currentUser->email, 'password' => $currentUser->password]);
+                UserRole::where('user_id', $id)->update(['role_id' => $currentUser->role[0]->id]);
+            }
+        }
+        $this->tearDown(); 
     }
 
     /**
@@ -201,11 +235,11 @@ class UserControllerTest extends TestCase
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'tested', '3', 200),
-            array('admin@admin.lt', 'admin', 'user', '3', 422),
-            array('admin@admin.lt', 'admin', 'admin', '9999999', 404),
-            array('test1@test.lt', '123456', 'test', '3', 403),
-            array('fake@user.lt', '123456', 'test', '3', 401)
+            array('admin@admin.lt', 'admin', 'testingUser', 'testuser@email.lt', '123456', '2', '15', 200),
+            array('admin@admin.lt', 'admin', 'testingUser', 'testuser@email.lt', '123456', '2', '999999', 404),
+            array('admin@admin.lt', 'admin', 'testing.User', 'testuser@email.lt', '123456', '2', '15', 422),
+            array('test1@test.lt', '123456', 'testingUser', 'testuser@email.lt', '123456', '2', '15', 403),
+            array('fake@user.lt', '123456', 'testingUser', 'testuser@email.lt', '123456', '2', '15', 401)
         );
     }
 
