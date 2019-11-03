@@ -133,7 +133,7 @@ $router->get('/', function () use ($router) {
             $router->put('/{id}', ['uses' => 'RatingController@update'], function (){});
             $router->delete('/{id}', ['uses' => 'RatingController@destroy'], function (){});
         });
-        $router->group(['middleware' => 'auth:api', 'role:admin,user'], function () use ($router) {
+        $router->group(['middleware' => ['auth:api', 'role:admin,user']], function () use ($router) {
         $router->post('/', ['uses' => 'RatingController@store'], function (){});
         });
         

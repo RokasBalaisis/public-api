@@ -162,7 +162,6 @@ class CategoryControllerTest extends TestCase
             $request = new Request();
             $request->setMethod('DELETE');
             $response = $this->categoryController->destroy($id);
-            fwrite(STDERR, $response);   
         }
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 200)

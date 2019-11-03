@@ -47,7 +47,7 @@ class RatingController extends Controller
         $rating->user_id = $request->user_id;
         $rating->rating = $request->rating;
         $rating->save();
-        return response()->json(['message' => 'Rating has been successfuly created', 'rating' => $rating], 200);
+        return response()->json(['message' => 'Rating has been successfuly created', 'rating' => $rating], 201);
     }
 
     /**
