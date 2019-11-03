@@ -22,7 +22,7 @@ class RoleControllerTest extends TestCase
     protected $client;
 
     /**
-     * @var RoleController $categoryController An instance of "CategoryController" to test.
+     * @var RoleController $roleController An instance of "RoleController" to test.
      */
     private $roleController;
 

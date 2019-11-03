@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\User;
 use App\UserRole;
 
+require('vendor/autoload.php');
+
 /**
  * Class UserControllerTest.
  *
@@ -20,7 +22,7 @@ class UserControllerTest extends TestCase
     protected $client;
 
     /**
-     * @var UserController $categoryController An instance of "CategoryController" to test.
+     * @var UserController $userController An instance of "UserController" to test.
      */
     private $userController;
 

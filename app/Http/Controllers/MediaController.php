@@ -23,36 +23,28 @@ class MediaController extends Controller
     public function index()
     {
         $media = Media::with('files', 'actors', 'ratings')->get();
-        if($media->count() > 1)
+        if($media->count() > 0)
         {
             $media->transform(function ($entry) {
-                $entry->files->transform(function ($item) {
-                    unset($item->media_id);
-            
-                    return $item;
-                });
-                $entry->ratings->transform(function ($item) {
-                    unset($item->media_id);
-            
-                    return $item;
-                });      
+                if($entry->files->count() > 0)
+                {
+                    $entry->files->transform(function ($item) {
+                        unset($item->media_id);
+                
+                        return $item;
+                    });
+                }
+                if($entry->ratings->count() > 0)
+                {
+                    $entry->ratings->transform(function ($item) {
+                        unset($item->media_id);
+                
+                        return $item;
+                    }); 
+                }    
                 return $entry;
             });
         }
-        else if($media->count() == 1){
-            $media = Media::with('files', 'actors', 'ratings')->first();
-            $media->files->transform(function ($item) {
-                unset($item->media_id);
-        
-                return $item;
-            });
-            $media->ratings->transform(function ($item) {
-                unset($item->media_id);
-        
-                return $item;
-            });      
-        }
-
         return response()->json(['media' => $media], 200);
     }
 

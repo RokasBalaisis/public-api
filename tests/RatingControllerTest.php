@@ -22,7 +22,7 @@ class RatingControllerTest extends TestCase
     protected $client;
 
     /**
-     * @var RatingController $categoryController An instance of "CategoryController" to test.
+     * @var RatingController $ratingController An instance of "RatingController" to test.
      */
     private $ratingController;
 

@@ -24,10 +24,13 @@ class MediaTypeController extends Controller
         if($media_types->count() > 0)
         {
             $media_types->transform(function ($entry) {
-                $entry->categories->transform(function ($item) {
-                    unset($item->media_type_id);      
-                    return $item;
-                });  
+                if($entry->categories->count() > 0)
+                {
+                    $entry->categories->transform(function ($item) {
+                        unset($item->media_type_id);      
+                        return $item;
+                    });
+                }  
                 return $entry;
             });
         }
