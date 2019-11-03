@@ -82,10 +82,10 @@ class RatingControllerTest extends TestCase
             'rating' => $rating,
         ];
         $response = $this->sendRequest($authorization, 'POST', '/ratings', $requestData);
-        
         $data = json_decode($response->getBody(), true);
         if(isset($data['rating']))
-            Rating::destroy($data['rating']['id']);
+            if(isset($data['rating']['id']))
+                Rating::destroy($data['rating']['id']);
         $this->assertEquals($responseCode, $response->getStatusCode());
         if($response->getStatusCode() == 201 || $response->getStatusCode() == 422)
         {
@@ -102,29 +102,74 @@ class RatingControllerTest extends TestCase
 
     /**
      * @covers \App\Http\Controllers\RatingController::show
+     * @dataProvider dataShowProvider
      */
-    public function testShow(): void
+    public function testShow($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $response = $this->sendRequest($authorization, 'GET', '/ratings'.'/'.$id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 404)
+            $this->ratingController->show($id);
+        $this->tearDown();
     }
 
     /**
      * @covers \App\Http\Controllers\RatingController::update
+     * @dataProvider dataUpdateProvider
      */
-    public function testUpdate(): void
+    public function testUpdate($email, $password, $media_id, $user_id, $rating, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $currentRating = DB::table('ratings')->where('id', $id)->first();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [
+            'media_id' => $media_id,
+            'user_id' => $user_id,
+            'rating' => $rating,
+        ];
+        $response = $this->sendRequest($authorization, 'PUT', '/ratings' . '/' . $id, $requestData);
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() != 404)
+            Rating::where('id', $id)->update(['media_id' => $currentRating->media_id, 'user_id' => $currentRating->user_id,  'rating' => $currentRating->rating]);
+        if($response->getStatusCode() == 200 || $response->getStatusCode() == 422 || $response->getStatusCode() == 404)
+        {
+            
+            $request = new Request();
+            $request->setMethod('PUT');
+            $request->request->add($requestData);
+            $this->ratingController->update($request, $id);
+            if($response->getStatusCode() != 404)
+                Rating::where('id', $id)->update(['media_id' => $currentRating->media_id, 'user_id' => $currentRating->user_id,  'rating' => $currentRating->rating]);
+        }
+        $this->tearDown(); 
     }
 
     /**
      * @covers \App\Http\Controllers\RatingController::destroy
+     * @dataProvider dataDestroyProvider
      */
-    public function testDestroy(): void
+    public function testDestroy($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $rating = Rating::find($id);
+        $response = $this->sendRequest($authorization, 'DELETE', '/ratings' . '/' . $id, $requestData);                
+        if($response->getStatusCode() == 200  || $response->getStatusCode() == 404 || $response->getStatusCode() == 422)
+        {
+            if($response->getStatusCode() == 200)
+                DB::table('ratings')->insert(['id' => $rating->id, 'media_id' => $rating->media_id, 'user_id' => $rating->user_id,  'rating' => $rating->rating,  'created_at' => $rating->created_at, 'updated_at' => $rating->updated_at]);    
+            $request = new Request();
+            $request->setMethod('DELETE');
+            $response = $this->ratingController->destroy($id);
+        }
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200)
+            DB::table('ratings')->insert(['id' => $rating->id, 'media_id' => $rating->media_id, 'user_id' => $rating->user_id,  'rating' => $rating->rating,  'created_at' => $rating->created_at, 'updated_at' => $rating->updated_at]);
+        $this->tearDown();  
     }
 
     public function authorize($email, $password)
@@ -181,7 +226,7 @@ class RatingControllerTest extends TestCase
             array('admin@admin.lt', 'admin', '1', '1', '5', 201),
             array('admin@admin.lt', 'admin', '1', '1', '100', 422),
             array('admin@admin.lt', 'admin', '100000', '1000000', '2', 422),
-            array('test1@test.lt', '123456', '1', '2', '4', 403),
+            array('test1@test.lt', '123456', '1', '2', '4', 201),
             array('fake@user.lt', '123456', '1', '2', '4', 401)
         );
     }
@@ -190,24 +235,23 @@ class RatingControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '1', 200),
-            array('test1@test.lt', '123456', '1', 200),
-            array('fake@user.lt', '123456', '1', 200),
+            array('test1@test.lt', '123456', '1', 403),
+            array('fake@user.lt', '123456', '1', 401),
             array('admin@admin.lt', 'admin', '99999', 404),
             array('admin@admin.lt', 'admin', '61346', 404),
-            array('fake@user.lt', 'fakepassword', '1', 200)
+            array('fake@user.lt', 'fakepassword', '1', 401)
         );
     }
 
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', '1', 'testcategory', '67', 200),
-            array('admin@admin.lt', 'admin', '1', 'testcategory', '999999', 404),
-            array('admin@admin.lt', 'admin', '1', 'test', '67', 422),
-            array('admin@admin.lt', 'admin', '50', 'testcategory', '67', 422),
-            array('test1@test.lt', '123456', '1', 'testcategory', '67', 403),
-            array('fake@user.lt', '123456', '1', 'testcategory', '67', 401),
-            array('administrator@admin.lt', 'fakepassword', '1', 'testcategory', '67', 401)
+            array('admin@admin.lt', 'admin', '1', '1', '5', '1', 200),
+            array('admin@admin.lt', 'admin', '1', '1', '100', '1', 422),
+            array('admin@admin.lt', 'admin', '1', '1', '100', '9999999', 404),
+            array('admin@admin.lt', 'admin', '100000', '1000000', '2', '1', 422),
+            array('test1@test.lt', '123456', '1', '2', '4', '1', 403),
+            array('fake@user.lt', '123456', '1', '2', '4', '1', 401)
         );
     }
 

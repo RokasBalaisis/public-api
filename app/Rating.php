@@ -16,7 +16,7 @@ class Rating extends Model
      * @var array
      */
     protected $fillable = [
-        'media_id', 'user_id', 'rating',
+        'id','media_id', 'user_id', 'rating',
     ];
 
     protected $hidden = ['pivot'];

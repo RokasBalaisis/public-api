@@ -16,7 +16,7 @@ class Actor extends Model
      * @var array
      */
     protected $fillable = [
-        'name','surname','born','info',
+        'id','name','surname','born','info',
     ];
 
     protected $hidden = [

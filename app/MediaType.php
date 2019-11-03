@@ -18,7 +18,7 @@ class MediaType extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
+        'id','name',
     ];
 
     protected $hidden = ['pivot', 'laravel_through_key'];
