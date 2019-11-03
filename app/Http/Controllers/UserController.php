@@ -96,10 +96,6 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if(!DB::table('roles')->where('id', '=', $request->role_id)->exists() && $request->has('role_id')){
-            return response()->json(['role_id' => ['Selected role does not exist!']], 422);
-        }
-        try {
             $user = User::with('role')->find($id);
             if($request->username != null)
                 $user->username = $request->username;
@@ -113,14 +109,6 @@ class UserController extends Controller
             $user = User::with('role')->find($id);
             //return successful response
             return response()->json(['message' => 'User information has been successfuly updated', 'user' => $user], 200);
-
-        } catch (\Exception $e) {
-            //return error message
-            return response()->json(['message' => 'User edit failed!'], 409);
-        }
-
-
-
         
     }
 

@@ -156,10 +156,31 @@ class UserControllerTest extends TestCase
      * @covers \App\Http\Controllers\UserController::destroy
      * @dataProvider dataDestroyProvider
      */
-    public function testDestroy(): void
+    public function testDestroy($email, $password, $id, $responseCode): void
     {
-        /** @todo Complete this unit test method. */
-        $this->markTestIncomplete();
+        $this->setUp();
+        $authorization = $this->authorize($email, $password);
+        $requestData = [];
+        $currentUser = User::with('role')->find($id);
+        $response = $this->sendRequest($authorization, 'DELETE', '/users' . '/' . $id, $requestData);                
+        if($response->getStatusCode() == 200  || $response->getStatusCode() == 404 || $response->getStatusCode() == 422)
+        {
+            if($response->getStatusCode() == 200)
+            {
+                DB::table('users')->insert(['id' => $id, 'username' => $currentUser->username, 'email' => $currentUser->email, 'password' => $currentUser->password, 'created_at' => $currentUser->created_at, 'updated_at' => $currentUser->updated_at]);
+                DB::table('user_role')->insert(['user_id' => $id, 'role_id' => $currentUser->role[0]->id]);
+            }  
+            $request = new Request();
+            $request->setMethod('DELETE');
+            $response = $this->userController->destroy($id);
+        }
+        $this->assertEquals($responseCode, $response->getStatusCode());
+        if($response->getStatusCode() == 200)
+            {
+                DB::table('users')->insert(['id' => $id, 'username' => $currentUser->username, 'email' => $currentUser->email, 'password' => $currentUser->password, 'created_at' => $currentUser->created_at, 'updated_at' => $currentUser->updated_at]);
+                DB::table('user_role')->insert(['user_id' => $id, 'role_id' => $currentUser->role[0]->id]);
+            }
+        $this->tearDown(); 
     }
 
     public function authorize($email, $password)
@@ -213,10 +234,10 @@ class UserControllerTest extends TestCase
     public function dataStoreProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'testingUser', 'testuser@email.lt', '123456', '2', 201),
-            array('admin@admin.lt', 'admin', 'testing.User', 'testuser@email.lt', '123456', '2', 422),
-            array('test1@test.lt', '123456', 'testingUser', 'testuser@email.lt', '123456', '2', 403),
-            array('fake@user.lt', '123456', 'testingUser', 'testuser@email.lt', '123456', '2', 401)
+            array('admin@admin.lt', 'admin', 'testingUserStore', 'testuser@email.lt', '123456', '2', 201),
+            array('admin@admin.lt', 'admin', 'testing.UserStore', 'testuser@email.lt', '123456', '2', 422),
+            array('test1@test.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 403),
+            array('fake@user.lt', '123456', 'testingUserStore', 'testuser@email.lt', '123456', '2', 401)
         );
     }
 
@@ -235,11 +256,11 @@ class UserControllerTest extends TestCase
     public function dataUpdateProvider()
     {
         return array(
-            array('admin@admin.lt', 'admin', 'testingUser', 'testuser@email.lt', '123456', '2', '15', 200),
-            array('admin@admin.lt', 'admin', 'testingUser', 'testuser@email.lt', '123456', '2', '999999', 404),
-            array('admin@admin.lt', 'admin', 'testing.User', 'testuser@email.lt', '123456', '2', '15', 422),
-            array('test1@test.lt', '123456', 'testingUser', 'testuser@email.lt', '123456', '2', '15', 403),
-            array('fake@user.lt', '123456', 'testingUser', 'testuser@email.lt', '123456', '2', '15', 401)
+            array('admin@admin.lt', 'admin', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '15', 200),
+            array('admin@admin.lt', 'admin', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '999999', 404),
+            array('admin@admin.lt', 'admin', 'testing.User', 'testuserupdated@email.lt', '123456', '2', '15', 422),
+            array('test1@test.lt', '123456', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '15', 403),
+            array('fake@user.lt', '123456', 'testingUser', 'testuserupdated@email.lt', '123456', '2', '15', 401)
         );
     }
 
@@ -247,7 +268,6 @@ class UserControllerTest extends TestCase
     {
         return array(
             array('admin@admin.lt', 'admin', '3', 200),
-            array('admin@admin.lt', 'admin', '2', 422),
             array('test1@test.lt', '123456', '3', 403),
             array('fake@user.lt', '123456', '3', 401),
             array('admin@admin.lt', 'admin', '99999', 404),
