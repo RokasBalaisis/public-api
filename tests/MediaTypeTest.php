@@ -46,7 +46,7 @@ class MediaTypeTest extends TestCase
      * @covers \App\MediaType::categories
      * @covers \App\MediaType::media
      */
-    public function testUsers(): void
+    public function testMediaType(): void
     {
         $this->setUp();
         $response = $this->mediatype->with('categories', 'media')->get();

@@ -47,7 +47,7 @@ class MediaTest extends TestCase
      * @covers \App\Media::actors
      * @covers \App\Media::ratings
      */
-    public function testUsers(): void
+    public function testMedia(): void
     {
         $this->setUp();
         $response = $this->media->with('files', 'actors', 'ratings')->get();

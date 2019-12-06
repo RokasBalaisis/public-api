@@ -45,7 +45,7 @@ class RoleTest extends TestCase
     /**
      * @covers \App\Role::users
      */
-    public function testUsers(): void
+    public function testRole(): void
     {
         $this->setUp();
         $response = $this->role->with('users')->get();

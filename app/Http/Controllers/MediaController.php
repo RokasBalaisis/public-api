@@ -18,7 +18,7 @@ class MediaController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -53,7 +53,7 @@ class MediaController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -119,7 +119,7 @@ class MediaController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
@@ -140,7 +140,7 @@ class MediaController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -236,7 +236,7 @@ class MediaController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
@@ -250,10 +250,13 @@ class MediaController extends Controller
             {
                 Storage::delete('/media'.'/'.$entry->media_id.'/'.$entry->folder.'/'.$entry->name);
             }
-            if(count(glob('/media'.'/'.$entry->media_id.'/'.$entry->folder, GLOB_NOSORT)) === 0)
-                Storage::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
-            if(count(glob('/media'.'/'.$entry->media_id, GLOB_NOSORT)) === 0)
-                Storage::deleteDirectory('/media'.'/'.$entry->media_id);
+            foreach($entries as $entry)
+            {
+                if(count(glob('/media'.'/'.$entry->media_id.'/'.$entry->folder, GLOB_NOSORT)) === 0)
+                    Storage::deleteDirectory('/media'.'/'.$entry->media_id.'/'.$entry->folder);
+                if(count(glob('/media'.'/'.$entry->media_id, GLOB_NOSORT)) === 0)
+                    Storage::deleteDirectory('/media'.'/'.$entry->media_id);
+            }
         }
         DB::table('media_files')->where('media_id', $id)->delete();
         DB::table('media_actors')->where('media_id', $id)->delete();
