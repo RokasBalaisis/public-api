@@ -272,6 +272,14 @@ class MediaController extends Controller
      */
     public function downloadFile($id)
     {
+        $headers = [
+            'Access-Control-Allow-Origin'      => '*',
+            'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Max-Age'           => '86400',
+            'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With',
+            'Access-Control-Expose-Headers'    => 'Authorization'
+        ];
         if(MediaFile::find($id) === null)
             return response()->json(['message' => 'Media file with specified id does not exist'], 404);
 
@@ -281,6 +289,6 @@ class MediaController extends Controller
             return response()->json(['message' => 'Media file does not exist'], 404);
         }
 
-        return response()->download(storage_path('app') . '/' . 'media' . '/' . $mediaFile->media_id . '/' . $mediaFile->folder . '/' . $mediaFile->name);
+        return response()->download(storage_path('app') . '/' . 'media' . '/' . $mediaFile->media_id . '/' . $mediaFile->folder . '/' . $mediaFile->name, null, $headers);
     }
 }
