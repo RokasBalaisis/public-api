@@ -282,7 +282,7 @@ class MediaController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if(!Storage::exists(storage_path('app') . '/' . 'media' . '/' . $request->media_id . '/' . $request->folder . '/' . $request->name)){
+        if(!is_file(storage_path('app') . '/' . 'media' . '/' . $request->media_id . '/' . $request->folder . '/' . $request->name)){
             return response()->json(['message' => 'Media file does not exist'], 404);
         }
 
