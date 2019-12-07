@@ -267,11 +267,21 @@ class MediaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  string  $url
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadFile($url)
+    public function downloadFile(Request $request)
     {
-        return response()->download(storage_path('app') . '/' . $url);
+        $validator = Validator::make($request->all(), [
+            'media_id' => ['exists:media,id', 'required', 'integer'],
+            'folder' => ['required'],
+            'name' => ['required'],
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        return response()->download(storage_path('app') . '/' . 'media' . '/' . $request->media_id . '/' . $request->folder . '/' . $request->name);
     }
 }
