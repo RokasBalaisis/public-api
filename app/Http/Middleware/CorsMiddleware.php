@@ -29,8 +29,7 @@ class CorsMiddleware
         }
 
         $response = $next($request);
-        dd(strpos($response->headers->get('content-type'), 'application/json'));
-        if(strpos($response->headers->get('content-type'), 'application/json') === true) {
+        if(strpos($response->headers->get('content-type'), 'application/json') !== false) {
             foreach($headers as $key => $value)
             {
                 $response->header($key, $value);
