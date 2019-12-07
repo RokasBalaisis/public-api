@@ -272,6 +272,6 @@ class MediaController extends Controller
      */
     public function downloadFile($url)
     {
-        return Storage::download($url);
+        return response()->download($url);
     }
 }
