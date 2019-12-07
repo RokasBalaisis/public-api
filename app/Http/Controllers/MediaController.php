@@ -273,7 +273,7 @@ class MediaController extends Controller
     public function downloadFile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'media_id' => ['exists:media,id', 'required', 'integer'],
+            'media_id' => ['required', 'exists:media,id', 'integer'],
             'folder' => ['required'],
             'name' => ['required'],
         ]);
