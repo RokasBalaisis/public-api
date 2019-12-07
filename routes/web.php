@@ -17,6 +17,7 @@ $router->get('/', function () use ($router) {
 
 
 
+    $router->get('/noimage', ['uses' => 'MediaController@noFileImage'], function (){});
 
     $router->post('login', ['uses' => 'AuthController@login'], function (){});
     $router->post('register', ['uses' => 'AuthController@register'], function (){});
@@ -63,7 +64,6 @@ $router->get('/', function () use ($router) {
         $router->get('/', ['uses' => 'MediaController@index'], function (){});
         $router->get('/{id}', ['uses' => 'MediaController@show'], function (){});
         $router->get('/file/{id}', ['uses' => 'MediaController@downloadFile'], function (){});
-        $router->get('/file/noimage', ['uses' => 'MediaController@noFileImage'], function (){});
     });
 
     $router->group(['prefix' => 'actors'], function () use ($router) {
