@@ -263,4 +263,15 @@ class MediaController extends Controller
         $media->delete();
         return response()->json(['message' => 'Media has been successfuly deleted'], 200);
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  string  $url
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function downloadFile($url)
+    {
+        return Storage::download($url);
+    }
 }
