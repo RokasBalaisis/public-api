@@ -267,25 +267,20 @@ class MediaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function downloadFile(Request $request)
+    public function downloadFile($id)
     {
-        $validator = Validator::make($request->all(), [
-            'media_id' => ['required', 'exists:media,id', 'integer'],
-            'folder' => ['required'],
-            'name' => ['required'],
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+        if(MediaFile::find($id) === null)
+            return response()->json(['message' => 'Media file with specified id does not exist'], 404);
 
-        if(!is_file(storage_path('app') . '/' . 'media' . '/' . $request->media_id . '/' . $request->folder . '/' . $request->name)){
+        $mediaFile = MediaFile::find($id);
+
+        if(!is_file(storage_path('app') . '/' . 'media' . '/' . $mediaFile->media_id . '/' . $mediaFile->folder . '/' . $mediaFile->name)){
             return response()->json(['message' => 'Media file does not exist'], 404);
         }
 
-        return response()->download(storage_path('app') . '/' . 'media' . '/' . $request->media_id . '/' . $request->folder . '/' . $request->name);
+        return response()->download(storage_path('app') . '/' . 'media' . '/' . $mediaFile->media_id . '/' . $mediaFile->folder . '/' . $mediaFile->name);
     }
 }
