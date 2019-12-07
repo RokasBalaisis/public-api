@@ -265,7 +265,7 @@ class MediaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Download a resource from storage.
      *
      * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -290,5 +290,25 @@ class MediaController extends Controller
         }
 
         return response()->download(storage_path('app') . '/' . 'media' . '/' . $mediaFile->media_id . '/' . $mediaFile->folder . '/' . $mediaFile->name, null, $headers);
+    }
+
+    /**
+     * Download a resource from storage.
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function noFileImage()
+    {
+        $headers = [
+            'Access-Control-Allow-Origin'      => '*',
+            'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Max-Age'           => '86400',
+            'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With',
+            'Access-Control-Expose-Headers'    => 'Authorization'
+        ];
+
+
+        return response()->download(storage_path('app')  . '/' . 'NoImage.png', null, $headers);
     }
 }
