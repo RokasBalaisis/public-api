@@ -62,7 +62,7 @@ $router->get('/', function () use ($router) {
        });
         $router->get('/', ['uses' => 'MediaController@index'], function (){});
         $router->get('/{id}', ['uses' => 'MediaController@show'], function (){});
-        $router->get('/file/{url}', ['uses' => 'MediaController@downloadFile'], function (){});
+        $router->get('/file', ['uses' => 'MediaController@downloadFile'], function (){});
     });
 
     $router->group(['prefix' => 'actors'], function () use ($router) {
