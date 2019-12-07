@@ -278,7 +278,7 @@ class MediaController extends Controller
             'Access-Control-Allow-Credentials' => 'true',
             'Access-Control-Max-Age'           => '86400',
             'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With',
-            'Access-Control-Expose-Headers'    => 'Authorization'
+            'Access-Control-Expose-Headers'    => 'Authorization, Content-Type'
         ];
         if(MediaFile::find($id) === null)
             return response()->json(['message' => 'Media file with specified id does not exist'], 404);
