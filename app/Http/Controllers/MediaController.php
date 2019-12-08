@@ -99,13 +99,17 @@ class MediaController extends Controller
         $file_data = array();
 
         $counter = 0;
-        foreach($request->image as $image)
+        if($request->image != null)
         {
-            $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
-            array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
-            $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
-            $counter++;
+            foreach($request->image as $image)
+            {
+                $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
+                array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
+                $image->storeAs('media/'.$media->id.'/images', 'image['.$counter.'].'.$image->getClientOriginalExtension());
+                $counter++;
+            }
         }
+
         DB::table('media_files')->insert(array_reverse($file_data));
         $media = Media::with('files', 'actors')->find($media->id);
         $media->files->transform(function ($item) {
