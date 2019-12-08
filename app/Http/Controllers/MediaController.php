@@ -293,6 +293,7 @@ class MediaController extends Controller
             return response()->json(['message' => 'Media file does not exist'], 404);
         }
 
+
         return response()->download(storage_path('app') . '/' . 'media' . '/' . $mediaFile->media_id . '/' . $mediaFile->folder . '/' . $mediaFile->name, null, $headers);
     }
 
