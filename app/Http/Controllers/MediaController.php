@@ -59,7 +59,7 @@ class MediaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'category_id' => ['exists:categories,id', 'required', 'integer'],
-            'name' => ['required', 'alphanum'],
+            'name' => ['required', 'alpha_dash'],
             'short_description' => ['required'],
             'description' => ['required'],
             'trailer_url' => ['required', 'regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
