@@ -62,7 +62,7 @@ class MediaController extends Controller
             'name' => ['required', 'min:3', 'regex:/^[A-Za-z]+$/'],
             'short_description' => ['required'],
             'description' => ['required'],
-            'trailer_url' => ['regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
+            'trailer_url' => ['required', 'regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
             'image' => ['array', 'min:3', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
