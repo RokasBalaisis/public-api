@@ -103,10 +103,10 @@ class MediaController extends Controller
         {
             foreach($request->image as $image)
             {
-                $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
+                $currentTimeStamp = Carbon::now()->format('Y-m-d_H-i-s-u');
                 array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => 'image['.$counter.'].'.$image->getClientOriginalExtension(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
                 $image->storeAs('media/'.$media->id.'/images', $currentTimeStamp .'.'.$image->getClientOriginalExtension());
-                $image->storeAs('public/', $currentTimeStamp .'.'.$image->getClientOriginalExtension());
+                $image->storeAs('public/', $currentTimeStamp . '_' . $image->getClientOriginalName() . '.'.$image->getClientOriginalExtension());
                 $counter++;
             }
         }
