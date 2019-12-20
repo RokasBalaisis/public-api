@@ -29,12 +29,12 @@ class CorsMiddleware
         }
 
         $response = $next($request);
-        //if(strpos($response->headers->get('content-type'), 'application/json') !== false) {
+        if(strpos($response->headers->get('content-type'), 'application/json') !== false) {
             foreach($headers as $key => $value)
             {
                 $response->header($key, $value);
             }
-        //}
+        }
 
         return $response;
     }
