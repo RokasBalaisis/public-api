@@ -35,7 +35,7 @@ class Media extends Model
 
     public function cover()
     {
-        return $this->files()->where('folder', '=', 'covers')->first();
+        return $this->files()->where('folder', '=', 'covers');
     }
 
     public function actors()
