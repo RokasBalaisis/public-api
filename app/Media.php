@@ -55,7 +55,6 @@ class Media extends Model
 
     public function ratingsAverage()
     {
-        dd($this->ratings());
-        return $this->ratings();
+        return $this->ratings()->avg('rating');
     }
 }
