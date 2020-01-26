@@ -48,7 +48,7 @@ class MediaTypeController extends Controller
         $media_types->transform(function ($entry) {
             $entry->media->transform(function ($item)
             {
-                $item->ratingAverage = $item->ratings->avg('rating') ?: 0;
+                $item->ratingAverage = number_format((float)$item->ratings->avg('rating'), 2, '.', '') ?: 0;
                 $item->ratingCount = $item->ratings->count();
                 unset($item->ratings);
                 return $item;
