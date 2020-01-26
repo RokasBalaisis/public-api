@@ -38,12 +38,12 @@ class Media extends Model
         return $this->files()->where('folder', '=', 'covers');
     }
 
-    public function ratingscount()
+    public function ratingsCount()
     {
         return $this->ratings()->count();
     }
 
-    public function ratingsaverage()
+    public function ratingsAverage()
     {
         return $this->ratings()->avg('rating');
     }
