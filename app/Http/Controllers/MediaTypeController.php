@@ -51,6 +51,10 @@ class MediaTypeController extends Controller
                 $item->ratingAverage = number_format((float)$item->ratings->avg('rating'), 2, '.', '') ?: 0;
                 $item->ratingCount = $item->ratings->count();
                 unset($item->ratings);
+                unset($item->id);
+                unset($item->category_id);
+                unset($item->description);
+                unset($item->trailer_url);
                 return $item;
             });
             return $entry;
