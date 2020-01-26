@@ -22,7 +22,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::with('files', 'actors', 'ratings')->get();
+        $media = Media::with('files', 'actors', 'ratings', 'cover')->get();
         if($media->count() > 0)
         {
             $media->transform(function ($entry) {
