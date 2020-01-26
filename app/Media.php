@@ -35,7 +35,7 @@ class Media extends Model
 
     public function cover()
     {
-        return $this->hasMany('App\MediaFile', 'media_id')->where('cover.folder', 'covers')->first();
+        return $this->files()->where('folder', '=', 'covers')->first();
     }
 
     public function actors()
