@@ -38,14 +38,14 @@ class Media extends Model
         return $this->files()->where('folder', '=', 'covers');
     }
 
-    public function ratingsCount()
+    public function ratingscount()
     {
         return $this->ratings()->count();
     }
 
-    public function ratingsAverage()
+    public function ratingsaverage()
     {
-        return $this->ratings->avg('rating');
+        return $this->ratings()->avg('rating');
     }
 
     public function actors()
