@@ -63,6 +63,7 @@ class MediaController extends Controller
             'short_description' => ['required'],
             'description' => ['required'],
             'trailer_url' => ['required', 'regex:/www.youtube(?:-nocookie)?.com\/(?:v|embed)\/([a-zA-Z0-9-_]+).*/'],
+            'cover' => ['file','mimes:jpg,jpeg,png,bmp', 'required'],
             'image' => ['array', 'min:3', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
@@ -105,13 +106,19 @@ class MediaController extends Controller
             {
                 $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
                 array_push($file_data, ['media_id' => $media->id, 'folder' => 'images', 'name' => $image->getClientOriginalName(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
-                $image->storeAs('media/'.$media->id.'/images', $currentTimeStamp .'.'.$image->getClientOriginalExtension());
-                $image->storeAs('public/', Carbon::parse($currentTimeStamp)->format('Y-m-d_H-i-s-u') . '_' . $image->getClientOriginalName());
+                $image->storeAs('public/images/', Carbon::parse($currentTimeStamp)->format('Y-m-d_H-i-s-u') . '_' . $image->getClientOriginalName());
                 $counter++;
             }
         }
-
         DB::table('media_files')->insert(array_reverse($file_data));
+
+        if($request->cover != null)
+        {
+            $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
+            $image->storeAs('public/covers/', Carbon::parse($currentTimeStamp)->format('Y-m-d_H-i-s-u') . '_' . $image->getClientOriginalName());
+        }
+
+        
         $media = Media::with('files', 'actors')->find($media->id);
         $media->files->transform(function ($item) {
             unset($item->media_id);
