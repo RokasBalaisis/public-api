@@ -45,7 +45,7 @@ class Media extends Model
 
     public function ratings()
     {
-        return $this->hasMany('App\Rating');
+        return $this->hasMany('App\Rating', 'media_id');
     }
 
     public function ratingsCount()
