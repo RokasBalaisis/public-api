@@ -38,16 +38,6 @@ class Media extends Model
         return $this->files()->where('folder', '=', 'covers');
     }
 
-    public function ratingsCount()
-    {
-        return $this->ratings()->count();
-    }
-
-    public function ratingsAverage()
-    {
-        return $this->ratings()->avg('rating');
-    }
-
     public function actors()
     {
         return $this->belongsToMany('App\Actor', 'media_actors');
@@ -56,5 +46,15 @@ class Media extends Model
     public function ratings()
     {
         return $this->hasMany('App\Rating');
+    }
+
+    public function ratingsCount()
+    {
+        return $this->ratings()->count();
+    }
+
+    public function ratingsAverage()
+    {
+        return $this->ratings()->avg('rating');
     }
 }
