@@ -51,6 +51,7 @@ class MediaTypeController extends Controller
                 $item->ratingAverage = $item->ratings->avg('rating') ?: 0;
                 $item->ratingCount = $item->ratings->count();
                 unset($item->ratings);
+                return $item;
             });
             return $entry;
         });
