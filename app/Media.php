@@ -48,14 +48,4 @@ class Media extends Model
         return $this->hasMany('App\Rating', 'media_id');
     }
 
-    public function ratingsCount()
-    {
-        return $this->ratings()->count();
-    }
-
-    public function ratingsAverage()
-    {
-        dd($this->ratings());
-        return $this->ratings()->avg('rating');
-    }
 }
