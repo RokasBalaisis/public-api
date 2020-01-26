@@ -44,7 +44,7 @@ class MediaTypeController extends Controller
      */
     public function indexMedia()
     {
-        $media_types = MediaType::with('media.ratingsAverage', 'media.cover')->get();
+        $media_types = MediaType::with('media.cover')->get();
         return response()->json(['media_types' => $media_types], 200);
     }
 
