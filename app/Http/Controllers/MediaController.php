@@ -115,7 +115,7 @@ class MediaController extends Controller
         if($request->cover != null)
         {
             $currentTimeStamp = Carbon::now()->format('Y-m-d H:i:s.u');
-            array_push($file_data, ['media_id' => $media->id, 'folder' => 'covers', 'name' => $image->getClientOriginalName(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
+            array_push($file_data, ['media_id' => $media->id, 'folder' => 'covers', 'name' => $request->cover->getClientOriginalName(), 'created_at' => $currentTimeStamp, 'updated_at' => $currentTimeStamp]);
             $image->storeAs('public/covers/', Carbon::parse($currentTimeStamp)->format('Y-m-d_H-i-s-u') . '_' . $image->getClientOriginalName());
         }
         DB::table('media_files')->insert(array_reverse($file_data));
