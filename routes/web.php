@@ -105,6 +105,7 @@ $router->get('/', function () use ($router) {
 
         $router->get('/', ['uses' => 'MediaTypeController@index'], function (){});
         $router->get('/media', ['uses' => 'MediaTypeController@indexMedia'], function (){});
+        $router->get('/media/latest', ['uses' => 'MediaTypeController@indexMediaLatest'], function (){});
         $router->get('/{id}', ['uses' => 'MediaTypeController@show'], function (){});
         $router->get('/{id}/media', ['uses' => 'MediaTypeController@showMedia'], function (){});
         

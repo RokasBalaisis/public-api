@@ -62,6 +62,31 @@ class MediaTypeController extends Controller
         return response()->json(['media_types' => $media_types], 200);
     }
 
+    /**
+     * Display a listing of the latest 12 resources with its media.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function indexMediaLatest()
+    {
+        $media_types = MediaType::with('media.ratings', 'media.cover')->orderBy('created_at', 'desc')->take(5)->get();
+        $media_types->transform(function ($entry) {
+            $entry->media->transform(function ($item)
+            {
+                $item->ratingAverage = number_format((float)$item->ratings->avg('rating'), 2, '.', '') ?: 0;
+                $item->ratingCount = $item->ratings->count();
+                unset($item->ratings);
+                unset($item->id);
+                unset($item->category_id);
+                unset($item->description);
+                unset($item->trailer_url);
+                return $item;
+            });
+            return $entry;
+        });
+        return response()->json(['media_types' => $media_types], 200);
+    }
+
 
     /**
      * Store a newly created resource in storage.
