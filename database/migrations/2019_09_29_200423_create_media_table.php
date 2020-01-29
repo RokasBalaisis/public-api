@@ -21,6 +21,7 @@ class CreateMediaTable extends Migration
             $table->text('description');
             $table->string('trailer_url');
             $table->decimal('imdb_rating', 4, 1)->nullable();
+            $table->smallInteger('year')->nullable();
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

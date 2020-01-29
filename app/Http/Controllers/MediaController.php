@@ -67,6 +67,7 @@ class MediaController extends Controller
             'image' => ['array', 'min:3', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
+            'year' => ['integer', 'digits:4', 'min:1900', 'max:'.(date('Y'))],
             'actor_id' => ['array'],
             'actor_id.*' => ['exists:actors,id', 'integer'],
         ]);
@@ -83,6 +84,8 @@ class MediaController extends Controller
         $media->trailer_url = $request->trailer_url;
         if($request->imdb_rating != null)
             $media->imdb_rating = $request->imdb_rating;
+        if($request->year != null)
+            $media->year = $request->year;
         $media->save();
 
         $actor_data = array();
@@ -169,6 +172,7 @@ class MediaController extends Controller
             'image' => ['array', 'max:3'],
             'image.*' => ['file','mimes:jpg,jpeg,png,bmp'],
             'imdb_rating' => ['numeric', 'between:0,10'],
+            'year' => ['integer', 'digits:4', 'min:1900', 'max:'.(date('Y'))],
             'actor_id' => ['array'],
             'actor_id.*' => ['exists:actors,id', 'integer'],
             'remove_actor_id' => ['array'],
@@ -192,6 +196,8 @@ class MediaController extends Controller
                 $media->trailer_url = $request->trailer_url;
             if($request->imdb_rating != null)
                 $media->imdb_rating = $request->imdb_rating;
+            if($request->year != null)
+                $media->year = $request->year;
             if($request->image != null)
             {
                 $file_data = array();
