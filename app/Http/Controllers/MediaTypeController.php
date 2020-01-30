@@ -69,7 +69,17 @@ class MediaTypeController extends Controller
      */
     public function indexMediaLatest()
     {
-        $media_types = MediaType::with('media.ratings', 'media.cover')->orderBy('created_at', 'desc')->limit(2)->get();
+        $media_types = array();
+        $allMediaTypes = MediaType::all();
+        foreach($allMediaTypes as $mediaType)
+        {
+            $mediaArray = MediaType::with('media.ratings', 'media.cover')->where('name', $mediaType->name)->orderBy('created_at', 'desc')->limit(12)->get();
+            foreach($mediaArray as $entry)
+            {
+                array_push($media_types, $entry);
+            }
+            $mediaArray = null;
+        }
         $media_types->transform(function ($entry) {
             $entry->media->transform(function ($item)
             {
