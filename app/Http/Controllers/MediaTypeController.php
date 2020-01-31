@@ -78,7 +78,7 @@ class MediaTypeController extends Controller
             {
                 array_push($media, $entry);
             }
-            $mediaType->media = $media;
+            $mediaType->media = collect($media);
             unset($media);
         }
         $result = collect($media_types);
