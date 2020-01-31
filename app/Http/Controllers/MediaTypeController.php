@@ -92,6 +92,9 @@ class MediaTypeController extends Controller
                 unset($item->category_id);
                 unset($item->description);
                 unset($item->trailer_url);
+                unset($item->cover[0]->id);
+                unset($item->cover[0]->media_id);
+                unset($item->cover[0]->updated_at);
                 return $item;
             });
             return $entry;
