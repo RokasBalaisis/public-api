@@ -73,8 +73,9 @@ class MediaTypeController extends Controller
         $allMediaTypes = MediaType::all();
         foreach($allMediaTypes as $mediaType)
         {
-            $mediaArray = MediaType::with('media.ratings', 'media.cover')->where('name', $mediaType->name)->get()->slice('0', 1);  //->media->sortByDesc('created_at')->take(12);
-            dd($mediaArray->keys());
+            $mediaArray = MediaType::with('media.ratings', 'media.cover')->where('name', $mediaType->name)->get();
+            $mediaArray = $mediaArray[0]->media->sortByDesc('created_at')->take(12);
+            dd($mediaArray);
             foreach($mediaArray as $entry)
             {
                 array_push($media_types, $entry);
