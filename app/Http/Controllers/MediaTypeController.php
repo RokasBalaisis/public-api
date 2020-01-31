@@ -81,8 +81,8 @@ class MediaTypeController extends Controller
             $mediaType->media = $media;
             unset($media);
         }
-        $media_types = collect($media_types);
-        $media_types->transform(function ($entry) {
+        $result = collect($media_types);
+        $result->transform(function ($entry) {
             $entry->media->transform(function ($item)
             {
                 $item->ratingAverage = number_format((round((float)$item->ratings->avg('rating') * 2) / 2), 2, '.', '') ?: 0;
@@ -96,7 +96,7 @@ class MediaTypeController extends Controller
             });
             return $entry;
         });
-        return response()->json(['media_types' => $media_types], 200);
+        return response()->json(['media_types' => $result], 200);
     }
 
 
