@@ -82,7 +82,6 @@ class MediaTypeController extends Controller
             unset($media);
         }
         dd($media_types);
-        $media_types = collect($media);
         $media_types->transform(function ($entry) {
             $entry->media->transform(function ($item)
             {
