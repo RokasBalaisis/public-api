@@ -68,20 +68,21 @@ class MediaTypeController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function indexMediaLatest()
-    {
-        $media_types = array();
-        $allMediaTypes = MediaType::all();
-        foreach($allMediaTypes as $mediaType)
+    {    
+        $media_types = MediaType::all();
+        foreach($media_types as $mediaType)
         {
+            $media = array();
             $mediaArray = MediaType::with('media.ratings', 'media.cover')->where('name', $mediaType->name)->get();
             foreach($mediaArray[0]->media->sortByDesc('created_at')->take(12) as $entry)
             {
-                array_push($media_types, $entry);
+                array_push($media, $entry);
             }
-            $mediaArray = null;
+            $mediaType->media = $media;
+            unset($media);
         }
         dd($media_types);
-        $media_types = collect($media_types);
+        $media_types = collect($media);
         $media_types->transform(function ($entry) {
             $entry->media->transform(function ($item)
             {
