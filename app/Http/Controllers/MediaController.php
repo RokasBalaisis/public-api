@@ -147,7 +147,7 @@ class MediaController extends Controller
     
             return $item;
         });   
-        return response()->json(['role' => $media], 200);
+        return response()->json(['media' => $media], 200);
     }
 
 
@@ -331,4 +331,23 @@ class MediaController extends Controller
 
         return response()->download(storage_path('app')  . '/' . 'NoImage.png', null, $headers);
     }
+
+    // /**
+    //  * Display the specified resource owner id.
+    //  *
+    //  * @param  int  $id
+    //  * @return \Illuminate\Http\JsonResponse
+    //  */
+    // public function getIdentity($media_file_name)
+    // {
+    //     if(Media::find($media_file_name) === null)
+    //         return response()->json(['message' => 'Media with specified id does not exist'], 404);
+    //     $media = Media::with('files', 'actors')->find($id);
+    //     $media->files->transform(function ($item) {
+    //         unset($item->media_id);
+    
+    //         return $item;
+    //     });   
+    //     return response()->json(['media' => $media], 200);
+    // }
 }

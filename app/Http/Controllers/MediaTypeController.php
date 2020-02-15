@@ -104,6 +104,17 @@ class MediaTypeController extends Controller
 
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function count()
+    {
+        $media_types = MediaType::all();
+        return response()->json(['media_types_count' => $media_types->count()], 200);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
