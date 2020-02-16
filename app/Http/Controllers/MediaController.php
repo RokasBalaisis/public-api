@@ -341,6 +341,7 @@ class MediaController extends Controller
     public function getMediaByName($media_file_name)
     {
         $parsedName = str_replace("_", " ", $media_file_name);
+        return response()->json(['media' => $parsedName], 200);
         if(Media::with('files', 'actors')->where('name', $parsedName)->first() === null)
             return response()->json(['message' => 'Media with specified name does not exist'], 404);
         $media = Media::with('files', 'actors')->where('name', $parsedName)->first();
