@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\User;
 use App\Role;
 use App\Media;
+use App\Category;
 use App\MediaFile;
 use Carbon\Carbon;
 
@@ -343,6 +344,12 @@ class MediaController extends Controller
         $parsedName = str_replace("_", " ", $media_file_name);
         if(!$media = Media::with('files', 'actors')->where('name', $parsedName)->first())
             return response()->json(['message' => 'Media with specified name does not exist'], 404);
+        $media->transform(function ($item) {
+            unset($item->id);
+            $item->category_name = Category::find($item->category_id)->name;
+            unset($item->category_id);
+            return $item;
+        }); 
         $media->files->transform(function ($item) {
             unset($item->media_id);
             return $item;
