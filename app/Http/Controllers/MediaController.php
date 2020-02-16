@@ -347,11 +347,20 @@ class MediaController extends Controller
         $category = Category::find($media->category_id);
         unset($media->id);
         unset($media->category_id);
+        unset($media->updated_at);
         $media->category_name = $category->name;
         $media->files->transform(function ($item) {
+            unset($item->id);
             unset($item->media_id);
+            unset($item->updated_at);
             return $item;
-        });   
+        });
+        $media->actors->transform(function ($item) {
+            unset($item->id);
+            unset($item->created_at);
+            unset($item->updated_at);
+            return $item;
+        });     
         return response()->json(['media' => $media], 200);
     }
 }
